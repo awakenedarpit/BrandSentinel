@@ -69,7 +69,7 @@ export const AuditHistoryScreen: React.FC<AuditHistoryScreenProps> = ({
             <span className={`px-2 py-0.5 rounded text-[10px] font-label-code font-bold uppercase ${
               source === 'supabase' ? 'bg-[#ecfdf5] text-[#10b981]' : 'bg-surface-container text-on-surface-variant'
             }`}>
-              {source === 'supabase' ? 'Supabase Live Ledger' : 'Local Demo Archive'}
+              {source === 'supabase' ? 'Supabase Live Ledger' : 'Account Data Unavailable'}
             </span>
           </div>
           <h1 className="font-headline-lg text-headline-lg text-on-surface tracking-tight">
