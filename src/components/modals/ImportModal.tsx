@@ -13,7 +13,6 @@ export const ImportModal: React.FC<ImportModalProps> = ({
   onExtractionComplete
 }) => {
   const [isProcessing, setIsProcessing] = useState(false);
-  const [selectedPreset, setSelectedPreset] = useState<string | null>(null);
   const [progressText, setProgressText] = useState('');
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -53,36 +52,6 @@ export const ImportModal: React.FC<ImportModalProps> = ({
     }
   };
 
-  const handleStartPresetExtraction = async (fileName: string) => {
-    setErrorMessage(null);
-    setIsProcessing(true);
-    setProgressText(`Preparing ${fileName} preset...`);
-
-    const sampleContent = fileName.includes('Tone_Matrix')
-      ? `# NovaFit Tone Matrix Q3
-## Section 1: Brand Voice Directives
-Use encouraging, realistic, and inclusive language. Never use hyperbolic generalizations like "works for everyone" or "instant results".
-## Section 2: Prohibited Competitor Comparisons
-Direct disparaging comparisons against competing fitness apps (such as Peloton, Whoop, or Equinox) without verifiable laboratory proof are strictly banned.
-## Section 3: Wordmark Standards
-The brand name is strictly spelled "NovaFit". Never "Nova Fit" or "novafit".`
-      : `# NovaFit Comprehensive Compliance Manual 2025
-## Section 1.1: Trademark
-The brand name is strictly spelled "NovaFit" in PascalCase.
-## Section 3.2: Absolute Claims
-NovaFit communications must never promise guaranteed results or specific outcome timelines. Physical fitness adaptations differ by metabolic and lifestyle factors.
-## Section 4.1: Mandatory Legal Disclaimers
-All promotional claims mentioning timeframe, weight, or physique milestones must include: "Results vary by individual."
-## Section 5.4: Medical Advice Guardrails
-NovaFit trainers cannot prescribe rehabilitation or diagnose clinical conditions. Exercise is supplemental wellness.
-## Section 7.2: Subscription Renewal Transparency
-Any mention of "Free Trial" must immediately clarify: "Auto-renews at $14.99/mo after trial unless canceled."`;
-
-    const blob = new Blob([sampleContent], { type: 'text/markdown' });
-    const file = new File([blob], fileName, { type: 'text/markdown' });
-
-    await handleFileUpload(file);
-  };
 
   return (
     <div className="fixed inset-0 z-50 bg-inverse-surface/40 backdrop-blur-sm flex items-center justify-center p-4">
