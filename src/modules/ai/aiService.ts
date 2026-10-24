@@ -1,4 +1,5 @@
 import { BrandRule, AuditFinding } from '../../types';
+import { supabase } from '../../lib/supabase';
 import { evaluateCopy, AuditResult } from '../audit/auditEngine';
 
 export interface AIServiceConfig {
@@ -51,13 +52,13 @@ export async function auditTextWithAI(
   }
 
   try {
+    const { data: sessionData } = await supabase.auth.getSession();
+    if (!sessionData.session) throw new Error('Sign in to run an audit.');
     const res = await fetch('/api/audit-rag', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${sessionData.session.access_token}` },
       body: JSON.stringify({
         copy,
-        rules,
-        brandProfileId: 'a1b2c3d4-e5f6-7a8b-9c0d-1e2f3a4b5c6d',
         campaignContext
       })
     });
@@ -109,15 +110,16 @@ export async function ingestDocumentFile(file: File): Promise<{
     reader.onload = async () => {
       try {
         const base64Content = (reader.result as string).split(',')[1];
+        const { data: sessionData } = await supabase.auth.getSession();
+        if (!sessionData.session) throw new Error('Sign in before uploading documents.');
         const res = await fetch('/api/ingest', {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+          headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${sessionData.session.access_token}` },
           body: JSON.stringify({
             fileName: file.name,
             fileType: file.name.endsWith('.pdf') ? 'PDF' : file.name.endsWith('.md') ? 'MD' : 'TXT',
             fileSize: `${Math.round(file.size / 1024)} KB`,
             base64Content,
-            brandProfileId: 'a1b2c3d4-e5f6-7a8b-9c0d-1e2f3a4b5c6d',
             description: `Uploaded ${file.name} for brand compliance grounding.`
           })
         });
