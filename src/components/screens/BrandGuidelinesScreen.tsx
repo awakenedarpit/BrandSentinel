@@ -32,12 +32,12 @@ export const BrandGuidelinesScreen: React.FC<BrandGuidelinesScreenProps> = ({
 
   // Category list with counts
   const categories: { label: string; count: number }[] = [
-    { label: 'All Rules', count: 24 },
-    { label: 'Brand Voice', count: 6 },
-    { label: 'Marketing Claims', count: 7 },
-    { label: 'Approved & Prohibited Phrases', count: 5 },
-    { label: 'Required Disclaimers', count: 4 },
-    { label: 'Terminology', count: 2 }
+    { label: 'All Rules', count: rules.length },
+    { label: 'Brand Voice', count: rules.filter(r => r.category === 'Brand Voice').length },
+    { label: 'Marketing Claims', count: rules.filter(r => r.category === 'Marketing Claims').length },
+    { label: 'Approved & Prohibited Phrases', count: rules.filter(r => r.category === 'Approved & Prohibited Phrases').length },
+    { label: 'Required Disclaimers', count: rules.filter(r => r.category === 'Required Disclaimers').length },
+    { label: 'Terminology', count: rules.filter(r => r.category === 'Terminology').length }
   ];
 
   // Filter rules
@@ -97,7 +97,7 @@ export const BrandGuidelinesScreen: React.FC<BrandGuidelinesScreenProps> = ({
     const jsonString = `data:text/json;charset=utf-8,${encodeURIComponent(JSON.stringify(rules, null, 2))}`;
     const downloadAnchor = document.createElement('a');
     downloadAnchor.setAttribute('href', jsonString);
-    downloadAnchor.setAttribute('download', `NovaFit_BrandRules_v2.8.json`);
+    downloadAnchor.setAttribute('download', `BrandSentinel_BrandRules.json`);
     document.body.appendChild(downloadAnchor);
     downloadAnchor.click();
     downloadAnchor.remove();
@@ -117,10 +117,10 @@ export const BrandGuidelinesScreen: React.FC<BrandGuidelinesScreenProps> = ({
               </span>
               <span className="px-2 py-0.5 rounded-full bg-surface-container-high text-on-surface-variant font-label-code text-label-code flex items-center gap-1.5">
                 <span className="w-1.5 h-1.5 rounded-full bg-[#10b981]"></span>
-                Vector Synced: NovaFit-v2.8
+                Your workspace policies
               </span>
               <span className="px-2 py-0.5 rounded-full bg-surface-container-highest text-primary font-label-meta text-label-meta tracking-wider uppercase font-bold">
-                Demo Configuration
+                Account Configuration
               </span>
             </div>
 
@@ -128,8 +128,7 @@ export const BrandGuidelinesScreen: React.FC<BrandGuidelinesScreenProps> = ({
               Brand Guidelines
             </h1>
             <p className="font-body-md text-body-md text-on-surface-variant">
-              Define, configure, and inspect the foundational guardrails that keep{' '}
-              <strong className="text-on-surface font-semibold">NovaFit</strong> consistent, legally compliant, and on-tone across all digital marketing touchpoints.
+              Define, configure, and inspect the foundational guardrails that keep your brand consistent, legally compliant, and on-tone across digital touchpoints.
             </p>
 
             <div className="flex flex-wrap items-center gap-space-md mt-2 pt-2 text-on-surface-variant">
@@ -137,7 +136,7 @@ export const BrandGuidelinesScreen: React.FC<BrandGuidelinesScreenProps> = ({
                 <span className="material-symbols-outlined text-secondary text-[18px]">tune</span>
                 <span className="font-body-sm text-body-sm">
                   <span className="text-on-surface-variant">Target Entity:</span>{' '}
-                  <strong className="text-on-surface font-semibold">NovaFit (Fitness & Wellness)</strong>
+                  <strong className="text-on-surface font-semibold">Your brand</strong>
                 </span>
               </div>
               <span className="w-1 h-1 rounded-full bg-outline-variant"></span>
@@ -218,7 +217,7 @@ export const BrandGuidelinesScreen: React.FC<BrandGuidelinesScreenProps> = ({
             <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-surface-container-low text-on-surface">
               <span className="material-symbols-outlined text-[#10b981] text-[18px]">verified</span>
               <span className="font-body-sm text-body-sm text-on-surface font-medium truncate max-w-xs">
-                Extracted <span className="text-primary font-semibold">8 rules</span> from <span className="font-label-code text-label-code font-semibold">NovaFit_Compliance_Manual_2025.pdf</span>
+                Extracted <span className="text-primary font-semibold">8 rules</span> from <span className="font-label-code text-label-code font-semibold">your brand_Compliance_Manual_2025.pdf</span>
               </span>
             </div>
             <button
@@ -255,7 +254,7 @@ export const BrandGuidelinesScreen: React.FC<BrandGuidelinesScreenProps> = ({
             </button>
             <span className="font-label-code text-[11px] text-on-surface-variant">or</span>
             <button
-              onClick={() => alert('Notion Workspace Integration: Connected to NovaFit Marketing Hub.')}
+              onClick={() => alert('Notion Workspace Integration: Connected to your brand Marketing Hub.')}
               className="px-space-md py-1.5 rounded-lg bg-surface-container-lowest hover:bg-surface-container-high text-primary text-body-sm font-semibold transition-colors shadow-sm flex items-center gap-1"
             >
               <span className="material-symbols-outlined text-[16px]">link</span>

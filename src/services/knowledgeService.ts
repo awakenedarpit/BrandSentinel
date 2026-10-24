@@ -1,7 +1,7 @@
 import { supabase, isSupabaseConfigured } from '../lib/supabase';
 import { KnowledgeDoc } from '../types';
 import { Database } from '../types/database';
-import { demoKnowledgeDocs } from '../modules/knowledge/knowledgeService';
+
 
 export function mapRowToKnowledgeDoc(row: Database['public']['Tables']['knowledge_documents']['Row']): KnowledgeDoc {
   return {
@@ -27,10 +27,12 @@ export async function fetchKnowledgeDocuments(): Promise<{
   error?: string;
 }> {
   try {
-    const apiRes = await fetch('/api/documents');
+    const { data: sessionData } = await supabase.auth.getSession();
+    if (!sessionData.session) return { docs: [], source: 'local', error: 'Sign in to load your knowledge base.' };
+    const apiRes = await fetch('/api/documents', { headers: { Authorization: `Bearer ${sessionData.session.access_token}` } });
     if (apiRes.ok) {
       const data = await apiRes.json();
-      if (Array.isArray(data.documents) && data.documents.length > 0) {
+      if (Array.isArray(data.documents)) {
         return {
           docs: data.documents,
           source: data.source === 'supabase' ? 'supabase' : 'local'
@@ -38,29 +40,29 @@ export async function fetchKnowledgeDocuments(): Promise<{
       }
     }
   } catch (_e) {
-    // fallback to direct Supabase client
+    // Use the authenticated Supabase query below if the API is unavailable.
   }
 
-  if (!isSupabaseConfigured()) {
-    return { docs: demoKnowledgeDocs, source: 'local' };
-  }
+  if (!isSupabaseConfigured()) return { docs: [], source: 'local', error: 'Supabase is not configured.' };
 
   try {
+    const { data: authData, error: authError } = await supabase.auth.getUser();
+    if (authError || !authData.user) return { docs: [], source: 'local', error: 'Sign in to load your knowledge base.' };
     const { data, error } = await supabase
       .from('knowledge_documents')
       .select('*')
+      .eq('user_id', authData.user.id)
       .order('created_at', { ascending: false });
 
-    if (error || !data || data.length === 0) {
-      return { docs: demoKnowledgeDocs, source: 'local' };
-    }
+    if (error) return { docs: [], source: 'local', error: error.message };
+    if (!data) return { docs: [], source: 'supabase' };
 
     return {
       docs: data.map(mapRowToKnowledgeDoc),
       source: 'supabase'
     };
   } catch (err: any) {
-    return { docs: demoKnowledgeDocs, source: 'local', error: err.message };
+    return { docs: [], source: 'local', error: err.message };
   }
 }
 
@@ -69,15 +71,19 @@ export async function fetchKnowledgeDocuments(): Promise<{
  */
 export async function deleteKnowledgeDocument(docId: string): Promise<boolean> {
   try {
-    const res = await fetch(`/api/documents/${docId}`, { method: 'DELETE' });
+    const { data: sessionData } = await supabase.auth.getSession();
+    if (!sessionData.session) throw new Error('Sign in before deleting documents.');
+    const res = await fetch(`/api/documents/${encodeURIComponent(docId)}`, { method: 'DELETE', headers: { Authorization: `Bearer ${sessionData.session.access_token}` } });
     if (res.ok) return true;
   } catch (_e) {
     // ignore
   }
 
   try {
-    await supabase.from('document_chunks').delete().eq('document_id', docId);
-    const { error } = await supabase.from('knowledge_documents').delete().eq('id', docId);
+    const { data: authData, error: authError } = await supabase.auth.getUser();
+    if (authError || !authData.user) return false;
+    await supabase.from('document_chunks').delete().eq('document_id', docId).eq('user_id', authData.user.id);
+    const { error } = await supabase.from('knowledge_documents').delete().eq('id', docId).eq('user_id', authData.user.id);
     return !error;
   } catch (_e) {
     return false;
@@ -98,9 +104,11 @@ export async function searchKnowledgeVector(query: string): Promise<Array<{
   if (!query || !query.trim()) return [];
 
   try {
+    const { data: sessionData } = await supabase.auth.getSession();
+    if (!sessionData.session) return [];
     const res = await fetch('/api/retrieve', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${sessionData.session.access_token}` },
       body: JSON.stringify({ query, topK: 5, threshold: 0.35 })
     });
 

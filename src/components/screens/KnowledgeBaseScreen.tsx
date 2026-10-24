@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { KnowledgeDoc } from '../../types';
 import { fetchKnowledgeDocuments, deleteKnowledgeDocument, searchKnowledgeVector } from '../../services/knowledgeService';
-import { sampleGroundedChunks } from '../../modules/knowledge/knowledgeService';
 
 interface KnowledgeBaseScreenProps {
   onOpenImportModal: () => void;
@@ -13,7 +12,7 @@ export const KnowledgeBaseScreen: React.FC<KnowledgeBaseScreenProps> = ({
   const [docs, setDocs] = useState<KnowledgeDoc[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [source, setSource] = useState<'supabase' | 'local'>('local');
+  const [source, setSource] = useState<'supabase' | 'local'>('supabase');
 
   const [searchChunkQuery, setSearchChunkQuery] = useState('');
   const [selectedDocId, setSelectedDocId] = useState<string | null>(null);
@@ -76,23 +75,7 @@ export const KnowledgeBaseScreen: React.FC<KnowledgeBaseScreenProps> = ({
     }
   };
 
-  const displayedChunks = liveSearchResults !== null
-    ? liveSearchResults
-    : sampleGroundedChunks.filter((chunk) => {
-        if (selectedDocId) {
-          const doc = docs.find(d => d.id === selectedDocId);
-          if (doc && !chunk.sourceDoc.toLowerCase().includes(doc.fileName.toLowerCase())) {
-            return false;
-          }
-        }
-        if (!searchChunkQuery.trim()) return true;
-        const q = searchChunkQuery.toLowerCase();
-        return (
-          chunk.textSnippet.toLowerCase().includes(q) ||
-          chunk.sourceDoc.toLowerCase().includes(q) ||
-          chunk.tags.some((t: string) => t.toLowerCase().includes(q))
-        );
-      });
+  const displayedChunks = liveSearchResults || [];
 
   return (
     <div className="flex flex-col w-full pb-16">
@@ -106,19 +89,19 @@ export const KnowledgeBaseScreen: React.FC<KnowledgeBaseScreenProps> = ({
               </span>
               <span className="px-2 py-0.5 rounded-full bg-surface-container-high text-on-surface-variant font-label-code text-label-code flex items-center gap-1.5">
                 <span className="w-1.5 h-1.5 rounded-full bg-[#10b981]"></span>
-                Index: novafit-primary-v2
+                Account-scoped index
               </span>
               <span className={`px-2 py-0.5 rounded-full font-label-code text-label-code text-[11px] font-bold ${
                 source === 'supabase' ? 'bg-[#ecfdf5] text-[#10b981]' : 'bg-surface-container text-on-surface-variant'
               }`}>
-                {source === 'supabase' ? 'Supabase Metadata' : 'Local Seed Docs'}
+                {source === 'supabase' ? 'Your workspace data' : 'No demo data'}
               </span>
             </div>
             <h1 className="font-headline-lg text-headline-lg text-on-surface tracking-tight">
               Brand Knowledge Base
             </h1>
             <p className="font-body-md text-body-md text-on-surface-variant">
-              Authoritative documents, style sheets, and FTC legal manuals semantically vectorized into groundable knowledge chunks with Gemini embeddings.
+              Upload your own brand book, policies, and regulations. Only documents in your account should appear here.
             </p>
           </div>
 
@@ -145,6 +128,8 @@ export const KnowledgeBaseScreen: React.FC<KnowledgeBaseScreenProps> = ({
           </div>
         </div>
       </div>
+
+      {!isLoading && docs.length === 0 && !error && <div className="mb-space-md rounded-xl border border-dashed border-outline-variant p-8 text-center"><h2 className="font-semibold text-on-surface">Your knowledge base is empty</h2><p className="mt-2 text-sm text-on-surface-variant">Upload a PDF containing your brand guidelines or regulations to start. Demo documents are not loaded into your account.</p><button onClick={onOpenImportModal} className="mt-4 rounded-lg bg-primary px-4 py-2 font-semibold text-on-primary">Upload your first PDF</button></div>}
 
       {/* Action Notice */}
       {actionNotice && (

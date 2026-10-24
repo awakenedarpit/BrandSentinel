@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { BrandRule, AuditReport } from '../../types';
 import { evaluateCopy, applyRemediation, createAuditReport } from '../../modules/audit/auditEngine';
-import { demoScenarioA, demoScenarioB } from '../../modules/data/demoData';
 import { auditTextWithAI, RAGAuditResponse } from '../../modules/ai/aiService';
 
 interface ContentAuditorProps {
@@ -13,10 +12,9 @@ export const ContentAuditor: React.FC<ContentAuditorProps> = ({
   brandRules,
   onOpenReport
 }) => {
-  const [campaignName, setCampaignName] = useState('NovaFit Summer Transformation Launch 2025');
+  const [campaignName, setCampaignName] = useState('');
   const [publishingSurface, setPublishingSurface] = useState('Social Media');
-  const [activeScenario, setActiveScenario] = useState<'A' | 'B' | 'custom'>('A');
-  const [copyText, setCopyText] = useState(demoScenarioA.copy);
+  const [copyText, setCopyText] = useState('');
   const [highlightedRuleId, setHighlightedRuleId] = useState<string | null>(null);
   const [isAuditing, setIsAuditing] = useState(false);
   const [actionNotice, setActionNotice] = useState<string | null>(null);
@@ -30,20 +28,6 @@ export const ContentAuditor: React.FC<ContentAuditorProps> = ({
   // Approximate token count
   const estimatedTokens = Math.round(charCount / 4.2);
 
-  const loadScenarioA = () => {
-    setActiveScenario('A');
-    setCopyText(demoScenarioA.copy);
-    setAiAuditResult(null);
-    setHighlightedRuleId(null);
-  };
-
-  const loadScenarioB = () => {
-    setActiveScenario('B');
-    setCopyText(demoScenarioB.copy);
-    setAiAuditResult(null);
-    setHighlightedRuleId(null);
-  };
-
   const handleApplyFix = (ruleId: string) => {
     const finding = findings.find(f => f.ruleId === ruleId);
     if (!finding) return;
@@ -51,7 +35,7 @@ export const ContentAuditor: React.FC<ContentAuditorProps> = ({
     const updated = applyRemediation(copyText, finding);
     setCopyText(updated);
     setAiAuditResult(null);
-    setActiveScenario('custom');
+
     setActionNotice(`Applied fix for ${ruleId}: Replaced with compliant phrasing.`);
     setTimeout(() => setActionNotice(null), 3000);
   };
@@ -63,7 +47,7 @@ export const ContentAuditor: React.FC<ContentAuditorProps> = ({
     const updated = applyRemediation(copyText, disclaimerFinding);
     setCopyText(updated);
     setAiAuditResult(null);
-    setActiveScenario('custom');
+
     setActionNotice('Mandatory legal disclaimer appended to copy.');
     setTimeout(() => setActionNotice(null), 3000);
   };
@@ -71,7 +55,7 @@ export const ContentAuditor: React.FC<ContentAuditorProps> = ({
   const handleClear = () => {
     setCopyText('');
     setAiAuditResult(null);
-    setActiveScenario('custom');
+
     setHighlightedRuleId(null);
   };
 
@@ -116,7 +100,7 @@ export const ContentAuditor: React.FC<ContentAuditorProps> = ({
             </span>
             <span className="text-outline-variant">•</span>
             <span className="font-label-code text-label-code text-on-surface-variant font-medium">
-              Session #AUD-8842-NVF
+              New audit session
             </span>
           </div>
           <h1 className="font-headline-lg text-headline-lg text-on-surface tracking-tight">
@@ -132,7 +116,7 @@ export const ContentAuditor: React.FC<ContentAuditorProps> = ({
           <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-surface-container text-on-surface">
             <span className="w-2 h-2 rounded-full bg-secondary-container"></span>
             <span className="font-label-meta text-label-meta text-on-surface">
-              Brand: <strong className="font-semibold text-primary">NovaFit</strong>
+              Brand: <strong className="font-semibold text-primary">Your workspace</strong>
             </span>
           </div>
           <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-surface-container text-on-surface">
@@ -182,7 +166,7 @@ export const ContentAuditor: React.FC<ContentAuditorProps> = ({
                   <div className="flex items-center gap-2 min-w-0">
                     <span className="material-symbols-outlined text-secondary text-[18px]">verified</span>
                     <span className="font-body-md text-body-md font-semibold truncate">
-                      NovaFit — Fitness & Wellness
+                      Your brand workspace
                     </span>
                   </div>
                   <span className="material-symbols-outlined text-on-surface-variant text-[18px]">expand_more</span>
@@ -265,31 +249,6 @@ export const ContentAuditor: React.FC<ContentAuditorProps> = ({
                 </div>
               </div>
 
-              {/* Scenario Toggles */}
-              <div className="flex items-center gap-1.5">
-                <button
-                  onClick={loadScenarioA}
-                  className={`px-2.5 py-1 rounded font-label-meta text-label-meta tracking-wide uppercase transition-all flex items-center gap-1 font-semibold ${
-                    activeScenario === 'A'
-                      ? 'bg-error-container text-on-error-container shadow-sm'
-                      : 'bg-surface-container text-on-surface-variant hover:text-on-surface'
-                  }`}
-                >
-                  <span className="w-1.5 h-1.5 rounded-full bg-error"></span>
-                  Scenario A (Non-Compliant)
-                </button>
-                <button
-                  onClick={loadScenarioB}
-                  className={`px-2.5 py-1 rounded font-label-meta text-label-meta tracking-wide uppercase transition-all flex items-center gap-1 font-semibold ${
-                    activeScenario === 'B'
-                      ? 'bg-[#ecfdf5] text-[#10b981] shadow-sm'
-                      : 'bg-surface-container text-on-surface-variant hover:text-on-surface'
-                  }`}
-                >
-                  <span className="w-1.5 h-1.5 rounded-full bg-[#10b981]"></span>
-                  Scenario B (Compliant)
-                </button>
-              </div>
             </div>
 
             {/* Editable Text Area with Visual Annotations */}
@@ -299,7 +258,7 @@ export const ContentAuditor: React.FC<ContentAuditorProps> = ({
                 onChange={(e) => {
                   setCopyText(e.target.value);
                   setAiAuditResult(null);
-                  setActiveScenario('custom');
+
                 }}
                 rows={5}
                 className="w-full font-body-lg text-body-lg text-on-surface leading-relaxed focus:outline-none resize-y bg-transparent"
@@ -502,7 +461,7 @@ export const ContentAuditor: React.FC<ContentAuditorProps> = ({
                 </div>
                 <p className="font-headline-sm text-headline-sm text-on-surface">No Content Entered</p>
                 <p className="font-body-sm text-body-sm text-on-surface-variant max-w-sm">
-                  Enter or paste your promotional marketing draft in the editor above, or select Scenario A or Scenario B to load sample campaigns.
+                  Enter or paste your marketing draft above. Audits use the rules and documents associated with your signed-in account.
                 </p>
               </div>
             ) : findings.length === 0 ? (
@@ -512,7 +471,7 @@ export const ContentAuditor: React.FC<ContentAuditorProps> = ({
                 </div>
                 <p className="font-headline-sm text-headline-sm text-on-surface">All Policies Satisfied</p>
                 <p className="font-body-sm text-body-sm text-on-surface-variant max-w-sm">
-                  This copy matches all active NovaFit voice and legal rules. Ready to publish or export!
+                  This copy passed checks against your active brand rules. Review the findings before publishing.
                 </p>
               </div>
             ) : (

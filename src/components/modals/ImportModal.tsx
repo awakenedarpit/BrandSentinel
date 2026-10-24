@@ -13,7 +13,6 @@ export const ImportModal: React.FC<ImportModalProps> = ({
   onExtractionComplete
 }) => {
   const [isProcessing, setIsProcessing] = useState(false);
-  const [selectedPreset, setSelectedPreset] = useState<string | null>(null);
   const [progressText, setProgressText] = useState('');
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -53,36 +52,6 @@ export const ImportModal: React.FC<ImportModalProps> = ({
     }
   };
 
-  const handleStartPresetExtraction = async (fileName: string) => {
-    setErrorMessage(null);
-    setIsProcessing(true);
-    setProgressText(`Preparing ${fileName} preset...`);
-
-    const sampleContent = fileName.includes('Tone_Matrix')
-      ? `# NovaFit Tone Matrix Q3
-## Section 1: Brand Voice Directives
-Use encouraging, realistic, and inclusive language. Never use hyperbolic generalizations like "works for everyone" or "instant results".
-## Section 2: Prohibited Competitor Comparisons
-Direct disparaging comparisons against competing fitness apps (such as Peloton, Whoop, or Equinox) without verifiable laboratory proof are strictly banned.
-## Section 3: Wordmark Standards
-The brand name is strictly spelled "NovaFit". Never "Nova Fit" or "novafit".`
-      : `# NovaFit Comprehensive Compliance Manual 2025
-## Section 1.1: Trademark
-The brand name is strictly spelled "NovaFit" in PascalCase.
-## Section 3.2: Absolute Claims
-NovaFit communications must never promise guaranteed results or specific outcome timelines. Physical fitness adaptations differ by metabolic and lifestyle factors.
-## Section 4.1: Mandatory Legal Disclaimers
-All promotional claims mentioning timeframe, weight, or physique milestones must include: "Results vary by individual."
-## Section 5.4: Medical Advice Guardrails
-NovaFit trainers cannot prescribe rehabilitation or diagnose clinical conditions. Exercise is supplemental wellness.
-## Section 7.2: Subscription Renewal Transparency
-Any mention of "Free Trial" must immediately clarify: "Auto-renews at $14.99/mo after trial unless canceled."`;
-
-    const blob = new Blob([sampleContent], { type: 'text/markdown' });
-    const file = new File([blob], fileName, { type: 'text/markdown' });
-
-    await handleFileUpload(file);
-  };
 
   return (
     <div className="fixed inset-0 z-50 bg-inverse-surface/40 backdrop-blur-sm flex items-center justify-center p-4">
@@ -173,52 +142,6 @@ Any mention of "Free Trial" must immediately clarify: "Auto-renews at $14.99/mo 
           </button>
         </div>
 
-        {/* Quick Presets */}
-        <div className="flex flex-col gap-2">
-          <span className="font-label-meta text-label-meta uppercase text-on-surface-variant font-semibold">
-            Quick Ingestion Presets:
-          </span>
-          <div className="flex flex-col gap-1.5">
-            <button
-              onClick={() => setSelectedPreset('NovaFit_Compliance_Manual_2025.pdf')}
-              className={`w-full flex items-center justify-between p-2.5 rounded-lg text-left transition-colors ${
-                selectedPreset === 'NovaFit_Compliance_Manual_2025.pdf'
-                  ? 'bg-primary-fixed/40 ring-1 ring-primary'
-                  : 'bg-surface-container-low hover:bg-surface-container'
-              }`}
-            >
-              <div className="flex items-center gap-2">
-                <span className="material-symbols-outlined text-secondary text-[18px]">description</span>
-                <span className="font-body-sm text-body-sm font-semibold text-on-surface">
-                  NovaFit_Compliance_Manual_2025.pdf
-                </span>
-              </div>
-              <span className="font-label-code text-[11px] text-primary font-semibold">
-                Ingest & Embed (5 Rules)
-              </span>
-            </button>
-
-            <button
-              onClick={() => setSelectedPreset('NovaFit_Tone_Matrix_Q3.md')}
-              className={`w-full flex items-center justify-between p-2.5 rounded-lg text-left transition-colors ${
-                selectedPreset === 'NovaFit_Tone_Matrix_Q3.md'
-                  ? 'bg-primary-fixed/40 ring-1 ring-primary'
-                  : 'bg-surface-container-low hover:bg-surface-container'
-              }`}
-            >
-              <div className="flex items-center gap-2">
-                <span className="material-symbols-outlined text-secondary text-[18px]">description</span>
-                <span className="font-body-sm text-body-sm font-semibold text-on-surface">
-                  NovaFit_Tone_Matrix_Q3.md
-                </span>
-              </div>
-              <span className="font-label-code text-[11px] text-primary font-semibold">
-                Ingest & Embed (3 Rules)
-              </span>
-            </button>
-          </div>
-        </div>
-
         {/* Processing Indicator */}
         {isProcessing && (
           <div className="p-3.5 rounded-xl bg-primary-fixed/30 border border-primary/20 flex items-center gap-3">
@@ -237,12 +160,12 @@ Any mention of "Free Trial" must immediately clarify: "Auto-renews at $14.99/mo 
             Cancel
           </button>
           <button
-            onClick={() => handleStartPresetExtraction(selectedPreset || 'NovaFit_Compliance_Manual_2025.pdf')}
+            onClick={() => fileInputRef.current?.click()}
             disabled={isProcessing}
             className="px-4 py-2 rounded-lg bg-primary text-on-primary font-body-sm text-body-sm font-semibold shadow-sm hover:bg-primary-container transition-all flex items-center gap-1.5"
           >
             <span className="material-symbols-outlined text-[16px]">bolt</span>
-            <span>{isProcessing ? 'Ingesting with Gemini...' : 'Run RAG Ingestion'}</span>
+            <span>{isProcessing ? 'Ingesting with Gemini...' : 'Choose your own document'}</span>
           </button>
         </div>
       </div>

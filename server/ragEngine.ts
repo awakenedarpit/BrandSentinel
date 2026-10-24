@@ -615,7 +615,7 @@ export async function ingestDocument(params: {
     // Upsert extracted brand rules into brand_rules table
     if (extractedRules.length > 0) {
       const ruleInserts = extractedRules.map(r => ({
-        id: r.id,
+        id: `${userId.slice(0, 8)}-${r.id}`,
         brand_profile_id: brandProfileId,
         user_id: userId || null,
         title: r.title,
@@ -988,12 +988,13 @@ export async function auditWithGeminiRAG(params: {
   copy: string;
   rules: any[];
   brandProfileId: string;
+  userId: string;
   campaignContext?: {
     campaignName?: string;
     publishingSurface?: string;
   };
 }) {
-  const { copy, rules, brandProfileId, campaignContext } = params;
+  const { copy, rules, brandProfileId, userId, campaignContext } = params;
 
   if (!copy || !copy.trim()) {
     return {
@@ -1015,7 +1016,8 @@ export async function auditWithGeminiRAG(params: {
   // 1. Retrieve top matching chunks
   const retrievedChunks = await retrieveRelevantChunks(copy, brandProfileId, {
     topK: 4,
-    threshold: 0.35
+    threshold: 0.35,
+    userId
   });
 
   // 2. Handle empty retrieval state explicitly:

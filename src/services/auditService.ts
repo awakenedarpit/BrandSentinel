@@ -1,7 +1,7 @@
 import { supabase, isSupabaseConfigured } from '../lib/supabase';
 import { AuditReport } from '../types';
 import { Database } from '../types/database';
-import { pastAuditHistory } from '../modules/data/demoData';
+
 
 export function mapRowToAuditReport(row: Database['public']['Tables']['audit_reports']['Row']): AuditReport {
   return {
@@ -18,9 +18,9 @@ export function mapRowToAuditReport(row: Database['public']['Tables']['audit_rep
     executionLatencyMs: row.execution_latency_ms,
     findings: Array.isArray(row.findings) ? row.findings : [],
     approver: {
-      name: row.approver_name || 'Elena Vance',
-      title: row.approver_title || 'VP Brand Governance',
-      avatarInitials: row.approver_avatar_initials || 'EV',
+      name: row.approver_name || '',
+      title: row.approver_title || '',
+      avatarInitials: row.approver_avatar_initials || '',
       status: row.approver_status || 'Assigned'
     },
     auditLog: Array.isArray(row.audit_log) ? row.audit_log : [],
@@ -53,7 +53,7 @@ export function mapAuditReportToInsert(report: AuditReport): Database['public'][
 }
 
 /**
- * Fetch past audit reports from Supabase (falls back to local demo history)
+ * Fetch only the signed-in user's audit reports.
  */
 export async function fetchAuditHistory(): Promise<{
   reports: AuditReport[];
@@ -61,22 +61,25 @@ export async function fetchAuditHistory(): Promise<{
   error?: string;
 }> {
   if (!isSupabaseConfigured()) {
-    return { reports: pastAuditHistory, source: 'local' };
+    return { reports: [], source: 'local', error: 'Supabase is not configured.' };
   }
 
   try {
+    const { data: authData, error: authError } = await supabase.auth.getUser();
+    if (authError || !authData.user) return { reports: [], source: 'local', error: 'Sign in to load audit history.' };
     const { data, error } = await supabase
       .from('audit_reports')
       .select('*')
+      .eq('user_id', authData.user.id)
       .order('created_at', { ascending: false });
 
     if (error) {
-      console.warn('[BrandSentinel] Failed to fetch audit history from Supabase, using local demo history:', error.message);
-      return { reports: pastAuditHistory, source: 'local', error: error.message };
+      console.warn('[BrandSentinel] Failed to fetch audit history:', error.message);
+      return { reports: [], source: 'local', error: error.message };
     }
 
     if (!data || data.length === 0) {
-      return { reports: pastAuditHistory, source: 'local' };
+      return { reports: [], source: 'supabase' };
     }
 
     return {
@@ -84,7 +87,7 @@ export async function fetchAuditHistory(): Promise<{
       source: 'supabase'
     };
   } catch (err: any) {
-    return { reports: pastAuditHistory, source: 'local', error: err.message };
+    return { reports: [], source: 'local', error: err.message };
   }
 }
 
@@ -97,7 +100,9 @@ export async function saveAuditReportToDb(report: AuditReport): Promise<{ succes
   }
 
   try {
-    const insertPayload = mapAuditReportToInsert(report);
+    const { data: authData, error: authError } = await supabase.auth.getUser();
+    if (authError || !authData.user) return { success: false, error: 'Sign in before saving audit reports.' };
+    const insertPayload = { ...mapAuditReportToInsert(report), id: `${authData.user.id.slice(0, 8)}-${report.id}`, user_id: authData.user.id };
     const { error } = await supabase
       .from('audit_reports')
       .upsert(insertPayload, { onConflict: 'id' });

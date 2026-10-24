@@ -31,6 +31,15 @@ async function parseJsonBody(req: Connect.IncomingMessage): Promise<any> {
   });
 }
 
+// Resolve and validate the Supabase access token for every data endpoint.
+async function authenticatedUserId(req: Connect.IncomingMessage): Promise<string | null> {
+  const header = req.headers.authorization || '';
+  const match = /^Bearer\s+(.+)$/i.exec(header);
+  if (!match) return null;
+  const { data, error } = await serverSupabase.auth.getUser(match[1]);
+  return error || !data.user ? null : data.user.id;
+}
+
 // Send JSON response helper
 function sendJson(res: any, status: number, data: any) {
   res.statusCode = status;
@@ -103,14 +112,16 @@ export function createRAGApiMiddleware(): Connect.NextHandleFunction {
         if (method !== 'GET') {
           return sendJson(res, 405, { error: 'Method not allowed. Use GET.' });
         }
-        // First try Supabase
+        const userId = await authenticatedUserId(req);
+        if (!userId) return sendJson(res, 401, { error: 'Authentication required.' });
         try {
           const { data, error } = await serverSupabase
             .from('knowledge_documents')
             .select('*')
+            .eq('user_id', userId)
             .order('created_at', { ascending: false });
-
-          if (!error && data && data.length > 0) {
+          if (error) return sendJson(res, 500, { error: 'Could not load this account knowledge base.' });
+          if (data) {
             const mapped = data.map(d => ({
               id: d.id,
               fileName: d.file_name,
@@ -126,12 +137,8 @@ export function createRAGApiMiddleware(): Connect.NextHandleFunction {
             return sendJson(res, 200, { documents: mapped, source: 'supabase' });
           }
         } catch (_e) {
-          // ignore, fall back to in-memory store
+          return sendJson(res, 500, { error: 'Could not load this account knowledge base.' });
         }
-
-        // In-memory documents fallback
-        const inMemDocs = Array.from(inMemoryDocumentStore.documents.values());
-        return sendJson(res, 200, { documents: inMemDocs, source: 'in-memory' });
       }
 
       // 3. POST /api/ingest (and alias /api/upload)
@@ -147,6 +154,8 @@ export function createRAGApiMiddleware(): Connect.NextHandleFunction {
           return sendJson(res, 405, { error: 'Method not allowed. Use POST.' });
         }
 
+        const userId = await authenticatedUserId(req);
+        if (!userId) return sendJson(res, 401, { error: 'Authentication required.' });
         const payload = await parseJsonBody(req);
         const {
           id,
@@ -155,7 +164,6 @@ export function createRAGApiMiddleware(): Connect.NextHandleFunction {
           fileSize,
           base64Content,
           textContent,
-          brandProfileId,
           description
         } = payload;
 
@@ -175,13 +183,22 @@ export function createRAGApiMiddleware(): Connect.NextHandleFunction {
         const docId = id || `doc-${Date.now()}`;
         const normalizedType = fileType?.toUpperCase() || (fileName.endsWith('.pdf') ? 'PDF' : 'MD');
 
+        let profileQuery = await serverSupabase.from('brand_profiles').select('id').eq('user_id', userId).limit(1).maybeSingle();
+        if (profileQuery.error) return sendJson(res, 500, { error: 'Could not load your brand profile.' });
+        let ownedBrandProfileId = profileQuery.data?.id;
+        if (!ownedBrandProfileId) {
+          const createdProfile = await serverSupabase.from('brand_profiles').insert({ user_id: userId, name: 'My Brand' }).select('id').single();
+          if (createdProfile.error || !createdProfile.data) return sendJson(res, 500, { error: 'Could not create your brand profile.' });
+          ownedBrandProfileId = createdProfile.data.id;
+        }
         const result = await ingestDocument({
           id: docId,
           fileName,
           fileType: normalizedType as any,
           fileSize: fileSize || `${Math.round(buffer.length / 1024)} KB`,
           buffer,
-          brandProfileId: brandProfileId || 'a1b2c3d4-e5f6-7a8b-9c0d-1e2f3a4b5c6d',
+          brandProfileId: ownedBrandProfileId,
+          userId,
           description
         });
 
@@ -191,6 +208,8 @@ export function createRAGApiMiddleware(): Connect.NextHandleFunction {
       // 4. POST /api/retrieve (and alias /api/search)
       if (pathname === '/api/retrieve' || pathname === '/api/search') {
         if (method === 'GET') {
+          const userId = await authenticatedUserId(req);
+          if (!userId) return sendJson(res, 401, { error: 'Authentication required.' });
           const queryParam = parsedUrl.searchParams.get('q') || parsedUrl.searchParams.get('query');
           if (!queryParam) {
             return sendJson(res, 200, {
@@ -201,9 +220,10 @@ export function createRAGApiMiddleware(): Connect.NextHandleFunction {
           }
           const topK = parseInt(parsedUrl.searchParams.get('topK') || '5', 10);
           const threshold = parseFloat(parsedUrl.searchParams.get('threshold') || '0.35');
-          const brandProfileId = parsedUrl.searchParams.get('brandProfileId') || 'a1b2c3d4-e5f6-7a8b-9c0d-1e2f3a4b5c6d';
-
-          const chunks = await retrieveRelevantChunks(queryParam, brandProfileId, { topK, threshold });
+          const profile = await serverSupabase.from('brand_profiles').select('id').eq('user_id', userId).limit(1).maybeSingle();
+          if (profile.error) return sendJson(res, 500, { error: 'Could not load your brand profile.' });
+          if (!profile.data) return sendJson(res, 200, { chunks: [], count: 0, status: 'empty' });
+          const chunks = await retrieveRelevantChunks(queryParam, profile.data.id, { topK, threshold, userId });
           return sendJson(res, 200, { chunks, count: chunks.length, status: chunks.length > 0 ? 'success' : 'empty' });
         }
 
@@ -211,18 +231,19 @@ export function createRAGApiMiddleware(): Connect.NextHandleFunction {
           return sendJson(res, 405, { error: 'Method not allowed. Use POST or GET ?q=query.' });
         }
 
+        const userId = await authenticatedUserId(req);
+        if (!userId) return sendJson(res, 401, { error: 'Authentication required.' });
         const payload = await parseJsonBody(req);
-        const { query, brandProfileId, topK, threshold } = payload;
+        const { query, topK, threshold } = payload;
 
         if (!query) {
           return sendJson(res, 400, { error: 'Missing query in request body' });
         }
 
-        const chunks = await retrieveRelevantChunks(
-          query,
-          brandProfileId || 'a1b2c3d4-e5f6-7a8b-9c0d-1e2f3a4b5c6d',
-          { topK, threshold }
-        );
+        const profile = await serverSupabase.from('brand_profiles').select('id').eq('user_id', userId).limit(1).maybeSingle();
+        if (profile.error) return sendJson(res, 500, { error: 'Could not load your brand profile.' });
+        if (!profile.data) return sendJson(res, 200, { chunks: [], count: 0, status: 'empty' });
+        const chunks = await retrieveRelevantChunks(query, profile.data.id, { topK, threshold, userId });
 
         return sendJson(res, 200, { chunks, count: chunks.length, status: chunks.length > 0 ? 'success' : 'empty' });
       }
@@ -241,42 +262,44 @@ export function createRAGApiMiddleware(): Connect.NextHandleFunction {
           return sendJson(res, 405, { error: 'Method not allowed. Use POST.' });
         }
 
+        const userId = await authenticatedUserId(req);
+        if (!userId) return sendJson(res, 401, { error: 'Authentication required.' });
         const payload = await parseJsonBody(req);
-        const { copy, rules, brandProfileId, campaignContext } = payload;
+        const { copy, campaignContext } = payload;
 
         if (typeof copy !== 'string') {
           return sendJson(res, 400, { error: 'Missing or invalid copy field' });
         }
 
-        const auditResponse = await auditWithGeminiRAG({
-          copy,
-          rules: rules || [],
-          brandProfileId: brandProfileId || 'a1b2c3d4-e5f6-7a8b-9c0d-1e2f3a4b5c6d',
-          campaignContext
-        });
+        const profile = await serverSupabase.from('brand_profiles').select('id').eq('user_id', userId).limit(1).maybeSingle();
+        if (profile.error) return sendJson(res, 500, { error: 'Could not load your brand profile.' });
+        if (!profile.data) return sendJson(res, 200, { status: 'Needs Review', healthScore: null, evidenceStatus: 'insufficient-evidence', findings: [], retrievedChunks: [], message: 'Upload your own brand guidelines before auditing.' });
+        const { data: ownedRules, error: rulesError } = await serverSupabase.from('brand_rules').select('*').eq('user_id', userId).eq('brand_profile_id', profile.data.id).eq('is_active', true);
+        if (rulesError) return sendJson(res, 500, { error: 'Could not load your brand rules.' });
+        const mappedRules = (ownedRules || []).map((r: any) => ({ id: r.id, title: r.title, category: r.category, severity: r.severity, isActive: r.is_active, statement: r.statement, prohibitedPatterns: r.prohibited_patterns || [], approvedSubstitutions: r.approved_substitutions || [], mandatoryCopy: r.mandatory_copy || undefined, regexPattern: r.regex_pattern || undefined, placementRequirement: r.placement_requirement || undefined }));
+        const auditResponse = await auditWithGeminiRAG({ copy, rules: mappedRules, brandProfileId: profile.data.id, userId, campaignContext });
 
         return sendJson(res, 200, auditResponse);
       }
 
       // 6. DELETE /api/documents/:id
       if (pathname.startsWith('/api/documents/') && method === 'DELETE') {
+        const userId = await authenticatedUserId(req);
+        if (!userId) return sendJson(res, 401, { error: 'Authentication required.' });
         const docId = pathname.replace('/api/documents/', '').trim();
         if (!docId) {
           return sendJson(res, 400, { error: 'Missing document id' });
         }
 
-        // Delete from in-memory store
+        const { data: ownedDoc, error: ownerError } = await serverSupabase.from('knowledge_documents').select('id').eq('id', docId).eq('user_id', userId).maybeSingle();
+        if (ownerError) return sendJson(res, 500, { error: 'Could not verify document ownership.' });
+        if (!ownedDoc) return sendJson(res, 404, { error: 'Document not found in your account.' });
+        const { error: chunksError } = await serverSupabase.from('document_chunks').delete().eq('document_id', docId).eq('user_id', userId);
+        if (chunksError) return sendJson(res, 500, { error: 'Could not delete document chunks.' });
+        const { error: deleteError } = await serverSupabase.from('knowledge_documents').delete().eq('id', docId).eq('user_id', userId);
+        if (deleteError) return sendJson(res, 500, { error: 'Could not delete document.' });
         inMemoryDocumentStore.documents.delete(docId);
         inMemoryDocumentStore.chunks.delete(docId);
-
-        // Delete from Supabase
-        try {
-          await serverSupabase.from('document_chunks').delete().eq('document_id', docId);
-          await serverSupabase.from('knowledge_documents').delete().eq('id', docId);
-        } catch (_e) {
-          // ignore
-        }
-
         return sendJson(res, 200, { success: true, message: `Document ${docId} deleted.` });
       }
 

@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import { demoAuditReport2025 } from '../../modules/data/demoData';
 import { AuditReport, BrandRule } from '../../types';
 
 interface AuditReportScreenProps {
@@ -15,7 +14,7 @@ export const AuditReportScreen: React.FC<AuditReportScreenProps> = ({
   onBackToAuditor,
   onOpenGuidelines
 }) => {
-  const [report, setReport] = useState<AuditReport>(propReport || demoAuditReport2025);
+  const [report, setReport] = useState<AuditReport | null>(propReport || null);
   const [isExportMenuOpen, setIsExportMenuOpen] = useState(false);
   const [copyStatus, setCopyStatus] = useState<string | null>(null);
   const [fixedRules, setFixedRules] = useState<Record<string, boolean>>({});
@@ -27,15 +26,17 @@ export const AuditReportScreen: React.FC<AuditReportScreenProps> = ({
   }, [propReport]);
 
   const handleApplyFix = (ruleId: string) => {
+    if (!report) return;
     setFixedRules(prev => ({ ...prev, [ruleId]: true }));
     setCopyStatus(`Remediation applied for ${ruleId}. Projected score increased.`);
     setTimeout(() => setCopyStatus(null), 3000);
   };
 
   const isAllFixed = fixedRules['BG-001'] && fixedRules['BG-002'] && fixedRules['BG-003'];
-  const displayScore = isAllFixed ? 100 : (Object.keys(fixedRules).length > 0 ? 76 : report.healthScore);
+  const displayScore = isAllFixed ? 100 : (Object.keys(fixedRules).length > 0 ? 76 : (report?.healthScore ?? 0));
 
   const handleCopyApproved = () => {
+    if (!report) return;
     navigator.clipboard?.writeText(report.remediatedCopy);
     setCopyStatus('Approved compliant text copied to clipboard!');
     setTimeout(() => setCopyStatus(null), 3000);
@@ -43,19 +44,22 @@ export const AuditReportScreen: React.FC<AuditReportScreenProps> = ({
 
   const handleExportPdf = () => {
     setIsExportMenuOpen(false);
-    alert('Generating signed forensic PDF compliance certificate with SHA-256 policy stamps for #AUD-2025-0894.');
+    alert('Generating signed forensic PDF compliance certificate with SHA-256 policy stamps for #account audit report.');
   };
 
   const handleExportJson = () => {
+    if (!report) return;
     setIsExportMenuOpen(false);
     const jsonString = `data:text/json;charset=utf-8,${encodeURIComponent(JSON.stringify(report, null, 2))}`;
     const downloadAnchor = document.createElement('a');
     downloadAnchor.setAttribute('href', jsonString);
-    downloadAnchor.setAttribute('download', `BrandSentinel_Audit_AUD-2025-0894.json`);
+    downloadAnchor.setAttribute('download', `BrandSentinel_Account_Audit_Report.json`);
     document.body.appendChild(downloadAnchor);
     downloadAnchor.click();
     downloadAnchor.remove();
   };
+
+  if (!report) return <div className="mx-auto mt-10 max-w-2xl rounded-2xl border border-dashed border-outline-variant p-10 text-center"><h2 className="text-xl font-semibold text-on-surface">No audit report selected</h2><p className="mt-2 text-on-surface-variant">Run an audit with your own brand guidelines or choose a report from your account's audit history.</p><button onClick={onBackToAuditor} className="mt-5 rounded-lg bg-primary px-4 py-2 font-semibold text-on-primary">Go to Content Auditor</button></div>;
 
   return (
     <div className="flex flex-col w-full pb-16">
@@ -83,7 +87,7 @@ export const AuditReportScreen: React.FC<AuditReportScreenProps> = ({
           <div className="flex items-center gap-2">
             <span className="px-2.5 py-1 rounded bg-surface-container-high text-on-surface-variant font-label-code text-[10px] uppercase tracking-widest font-semibold flex items-center gap-1.5 shadow-sm">
               <span className="w-1.5 h-1.5 rounded-full bg-secondary"></span>
-              DEMO AUDIT RECORD
+              ACCOUNT AUDIT REPORT
             </span>
             <span
               className={`px-2.5 py-1 rounded-full font-label-meta text-label-meta uppercase tracking-wider flex items-center gap-1 font-semibold ${
@@ -222,7 +226,7 @@ export const AuditReportScreen: React.FC<AuditReportScreenProps> = ({
               </div>
 
               <button
-                onClick={() => alert(`Share link for #AUD-2025-0894 copied! Security token generated for internal risk reviewers.`)}
+                onClick={() => alert(`Share link for this account's audit report copied! Security token generated for internal risk reviewers.`)}
                 className="px-3.5 py-2 rounded-lg bg-primary text-on-primary hover:bg-primary-container font-body-sm text-body-sm font-semibold shadow-sm transition-all flex items-center gap-1.5"
               >
                 <span className="material-symbols-outlined text-[18px]">share</span>
@@ -389,7 +393,7 @@ export const AuditReportScreen: React.FC<AuditReportScreenProps> = ({
                     Forensic Analysis
                   </span>
                   <p className="text-on-surface">
-                    Direct breach of NovaFit's core scientific integrity policy and FTC marketing truth regulations. Fitness outcomes are intrinsically dependent on non-deterministic physiological variables.
+                    Direct breach of your brand's core scientific integrity policy and FTC marketing truth regulations. Fitness outcomes are intrinsically dependent on non-deterministic physiological variables.
                   </p>
                 </div>
               </div>
@@ -408,12 +412,12 @@ export const AuditReportScreen: React.FC<AuditReportScreenProps> = ({
                   </span>
                 </div>
                 <blockquote className="italic text-on-surface font-body-md text-body-md pl-3 bg-surface-container-high/40 py-2 rounded-r border-l-2 border-primary">
-                  “NovaFit communications must never promise guaranteed results or specific outcome timelines. Physical fitness adaptations differ by metabolic and lifestyle factors.”
+                  “your brand communications must never promise guaranteed results or specific outcome timelines. Physical fitness adaptations differ by metabolic and lifestyle factors.”
                 </blockquote>
                 <div className="flex flex-wrap items-center justify-between gap-2 pt-1 font-label-code text-label-code text-on-surface-variant">
                   <div className="flex items-center gap-1.5">
                     <span className="material-symbols-outlined text-[16px] text-error">picture_as_pdf</span>
-                    <span className="font-medium text-on-surface">NovaFit_Brand_Compliance_Manual_2025.pdf</span>
+                    <span className="font-medium text-on-surface">your brand_Brand_Compliance_Manual_2025.pdf</span>
                     <span className="text-on-surface-variant">— Section 3.2, Page 14</span>
                   </div>
                   <button onClick={onOpenGuidelines} className="text-primary hover:underline font-semibold flex items-center gap-1">
@@ -513,7 +517,7 @@ export const AuditReportScreen: React.FC<AuditReportScreenProps> = ({
                 <div className="flex flex-wrap items-center justify-between gap-2 pt-1 font-label-code text-label-code text-on-surface-variant">
                   <div className="flex items-center gap-1.5">
                     <span className="material-symbols-outlined text-[16px] text-error">picture_as_pdf</span>
-                    <span className="font-medium text-on-surface">NovaFit_Brand_Guidelines_Voice_Tone.pdf</span>
+                    <span className="font-medium text-on-surface">your brand_Brand_Guidelines_Voice_Tone.pdf</span>
                     <span className="text-on-surface-variant">— Page 8, Paragraph 3</span>
                   </div>
                   <button onClick={onOpenGuidelines} className="text-primary hover:underline font-semibold flex items-center gap-1">
@@ -774,7 +778,7 @@ export const AuditReportScreen: React.FC<AuditReportScreenProps> = ({
             <div className="flex flex-col gap-2 font-body-sm text-body-sm">
               <div className="flex items-center justify-between py-1.5 bg-surface-container-low/40 px-3 rounded-lg">
                 <span className="text-on-surface-variant font-label-meta text-label-meta uppercase tracking-wider">Vector Index</span>
-                <span className="font-label-code text-label-code font-semibold text-primary">novafit-primary-v2</span>
+                <span className="font-label-code text-label-code font-semibold text-primary">account-specific index</span>
               </div>
               <div className="flex items-center justify-between py-1.5 bg-surface-container-low/40 px-3 rounded-lg">
                 <span className="text-on-surface-variant font-label-meta text-label-meta uppercase tracking-wider">Knowledge Chunks</span>
