@@ -97,7 +97,7 @@ export const BrandGuidelinesScreen: React.FC<BrandGuidelinesScreenProps> = ({
     const jsonString = `data:text/json;charset=utf-8,${encodeURIComponent(JSON.stringify(rules, null, 2))}`;
     const downloadAnchor = document.createElement('a');
     downloadAnchor.setAttribute('href', jsonString);
-    downloadAnchor.setAttribute('download', `NovaFit_BrandRules_v2.8.json`);
+    downloadAnchor.setAttribute('download', `BrandSentinel_BrandRules.json`);
     document.body.appendChild(downloadAnchor);
     downloadAnchor.click();
     downloadAnchor.remove();
@@ -117,10 +117,10 @@ export const BrandGuidelinesScreen: React.FC<BrandGuidelinesScreenProps> = ({
               </span>
               <span className="px-2 py-0.5 rounded-full bg-surface-container-high text-on-surface-variant font-label-code text-label-code flex items-center gap-1.5">
                 <span className="w-1.5 h-1.5 rounded-full bg-[#10b981]"></span>
-                Vector Synced: NovaFit-v2.8
+                Your workspace policies
               </span>
               <span className="px-2 py-0.5 rounded-full bg-surface-container-highest text-primary font-label-meta text-label-meta tracking-wider uppercase font-bold">
-                Demo Configuration
+                Account Configuration
               </span>
             </div>
 
@@ -128,8 +128,7 @@ export const BrandGuidelinesScreen: React.FC<BrandGuidelinesScreenProps> = ({
               Brand Guidelines
             </h1>
             <p className="font-body-md text-body-md text-on-surface-variant">
-              Define, configure, and inspect the foundational guardrails that keep{' '}
-              <strong className="text-on-surface font-semibold">NovaFit</strong> consistent, legally compliant, and on-tone across all digital marketing touchpoints.
+              Define, configure, and inspect the foundational guardrails that keep your brand consistent, legally compliant, and on-tone across digital touchpoints.
             </p>
 
             <div className="flex flex-wrap items-center gap-space-md mt-2 pt-2 text-on-surface-variant">
@@ -137,7 +136,7 @@ export const BrandGuidelinesScreen: React.FC<BrandGuidelinesScreenProps> = ({
                 <span className="material-symbols-outlined text-secondary text-[18px]">tune</span>
                 <span className="font-body-sm text-body-sm">
                   <span className="text-on-surface-variant">Target Entity:</span>{' '}
-                  <strong className="text-on-surface font-semibold">NovaFit (Fitness & Wellness)</strong>
+                  <strong className="text-on-surface font-semibold">Your brand</strong>
                 </span>
               </div>
               <span className="w-1 h-1 rounded-full bg-outline-variant"></span>
