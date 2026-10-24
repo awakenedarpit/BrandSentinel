@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import { demoAuditReport2025 } from '../../modules/data/demoData';
 import { AuditReport, BrandRule } from '../../types';
 
 interface AuditReportScreenProps {
@@ -15,7 +14,7 @@ export const AuditReportScreen: React.FC<AuditReportScreenProps> = ({
   onBackToAuditor,
   onOpenGuidelines
 }) => {
-  const [report, setReport] = useState<AuditReport>(propReport || demoAuditReport2025);
+  const [report, setReport] = useState<AuditReport | null>(propReport || null);
   const [isExportMenuOpen, setIsExportMenuOpen] = useState(false);
   const [copyStatus, setCopyStatus] = useState<string | null>(null);
   const [fixedRules, setFixedRules] = useState<Record<string, boolean>>({});
@@ -27,6 +26,7 @@ export const AuditReportScreen: React.FC<AuditReportScreenProps> = ({
   }, [propReport]);
 
   const handleApplyFix = (ruleId: string) => {
+    if (!report) return;
     setFixedRules(prev => ({ ...prev, [ruleId]: true }));
     setCopyStatus(`Remediation applied for ${ruleId}. Projected score increased.`);
     setTimeout(() => setCopyStatus(null), 3000);
@@ -36,6 +36,7 @@ export const AuditReportScreen: React.FC<AuditReportScreenProps> = ({
   const displayScore = isAllFixed ? 100 : (Object.keys(fixedRules).length > 0 ? 76 : report.healthScore);
 
   const handleCopyApproved = () => {
+    if (!report) return;
     navigator.clipboard?.writeText(report.remediatedCopy);
     setCopyStatus('Approved compliant text copied to clipboard!');
     setTimeout(() => setCopyStatus(null), 3000);
@@ -47,6 +48,7 @@ export const AuditReportScreen: React.FC<AuditReportScreenProps> = ({
   };
 
   const handleExportJson = () => {
+    if (!report) return;
     setIsExportMenuOpen(false);
     const jsonString = `data:text/json;charset=utf-8,${encodeURIComponent(JSON.stringify(report, null, 2))}`;
     const downloadAnchor = document.createElement('a');
@@ -56,6 +58,8 @@ export const AuditReportScreen: React.FC<AuditReportScreenProps> = ({
     downloadAnchor.click();
     downloadAnchor.remove();
   };
+
+  if (!report) return <div className="mx-auto mt-10 max-w-2xl rounded-2xl border border-dashed border-outline-variant p-10 text-center"><h2 className="text-xl font-semibold text-on-surface">No audit report selected</h2><p className="mt-2 text-on-surface-variant">Run an audit with your own brand guidelines or choose a report from your account's audit history.</p><button onClick={onBackToAuditor} className="mt-5 rounded-lg bg-primary px-4 py-2 font-semibold text-on-primary">Go to Content Auditor</button></div>;
 
   return (
     <div className="flex flex-col w-full pb-16">
