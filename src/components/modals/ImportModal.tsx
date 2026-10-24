@@ -142,52 +142,6 @@ export const ImportModal: React.FC<ImportModalProps> = ({
           </button>
         </div>
 
-        {/* Quick Presets */}
-        <div className="flex flex-col gap-2">
-          <span className="font-label-meta text-label-meta uppercase text-on-surface-variant font-semibold">
-            Quick Ingestion Presets:
-          </span>
-          <div className="flex flex-col gap-1.5">
-            <button
-              onClick={() => setSelectedPreset('NovaFit_Compliance_Manual_2025.pdf')}
-              className={`w-full flex items-center justify-between p-2.5 rounded-lg text-left transition-colors ${
-                selectedPreset === 'NovaFit_Compliance_Manual_2025.pdf'
-                  ? 'bg-primary-fixed/40 ring-1 ring-primary'
-                  : 'bg-surface-container-low hover:bg-surface-container'
-              }`}
-            >
-              <div className="flex items-center gap-2">
-                <span className="material-symbols-outlined text-secondary text-[18px]">description</span>
-                <span className="font-body-sm text-body-sm font-semibold text-on-surface">
-                  NovaFit_Compliance_Manual_2025.pdf
-                </span>
-              </div>
-              <span className="font-label-code text-[11px] text-primary font-semibold">
-                Ingest & Embed (5 Rules)
-              </span>
-            </button>
-
-            <button
-              onClick={() => setSelectedPreset('NovaFit_Tone_Matrix_Q3.md')}
-              className={`w-full flex items-center justify-between p-2.5 rounded-lg text-left transition-colors ${
-                selectedPreset === 'NovaFit_Tone_Matrix_Q3.md'
-                  ? 'bg-primary-fixed/40 ring-1 ring-primary'
-                  : 'bg-surface-container-low hover:bg-surface-container'
-              }`}
-            >
-              <div className="flex items-center gap-2">
-                <span className="material-symbols-outlined text-secondary text-[18px]">description</span>
-                <span className="font-body-sm text-body-sm font-semibold text-on-surface">
-                  NovaFit_Tone_Matrix_Q3.md
-                </span>
-              </div>
-              <span className="font-label-code text-[11px] text-primary font-semibold">
-                Ingest & Embed (3 Rules)
-              </span>
-            </button>
-          </div>
-        </div>
-
         {/* Processing Indicator */}
         {isProcessing && (
           <div className="p-3.5 rounded-xl bg-primary-fixed/30 border border-primary/20 flex items-center gap-3">
