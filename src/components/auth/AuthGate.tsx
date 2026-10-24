@@ -34,7 +34,14 @@ export function AuthGate({ children }: { children: React.ReactNode }) {
       const { data, error: err } = await (supabase as any).from('company_memberships')
         .select('company_id').eq('user_id', session.user.id).limit(1).maybeSingle();
       if (!alive) return;
-      if (err) { setError('Apply the company workspace migration in Supabase before signing in.'); setLoading(false); return; }
+      if (err) {
+        console.error('[BrandSentinel] Workspace membership check failed:', err.message);
+        setError(err.message.includes('company_memberships') || err.code === 'PGRST205'
+          ? 'Workspace database setup is missing. Apply supabase/migrations/202610240001_company_workspaces.sql to the Supabase project configured for this app, then reload.'
+          : 'Could not check workspace access: ' + err.message);
+        setLoading(false);
+        return;
+      }
       if (data) setWorkspaceReady(true);
       setLoading(false);
     })();
@@ -65,7 +72,13 @@ export function AuthGate({ children }: { children: React.ReactNode }) {
       const { error: err } = await (supabase as any).rpc('create_company_workspace', { company_name: company.trim() });
       if (err) throw err;
       setWorkspaceReady(true);
-    } catch (err) { setError(err instanceof Error ? err.message : 'Could not create workspace.'); }
+    } catch (err) {
+      const message = err instanceof Error ? err.message : 'Could not create workspace.';
+      console.error('[BrandSentinel] Workspace creation failed:', message);
+      setError(message.includes('create_company_workspace') || message.includes('schema cache')
+        ? 'The workspace database function is missing. Apply supabase/migrations/202610240001_company_workspaces.sql to the Supabase project configured for this app, then reload.'
+        : message);
+    }
     finally { setBusy(false); }
   };
 
