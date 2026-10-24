@@ -277,7 +277,8 @@ export function createRAGApiMiddleware(): Connect.NextHandleFunction {
         if (!profile.data) return sendJson(res, 200, { status: 'Needs Review', healthScore: null, evidenceStatus: 'insufficient-evidence', findings: [], retrievedChunks: [], message: 'Upload your own brand guidelines before auditing.' });
         const { data: ownedRules, error: rulesError } = await serverSupabase.from('brand_rules').select('*').eq('user_id', userId).eq('brand_profile_id', profile.data.id).eq('is_active', true);
         if (rulesError) return sendJson(res, 500, { error: 'Could not load your brand rules.' });
-        const auditResponse = await auditWithGeminiRAG({ copy, rules: ownedRules || [], brandProfileId: profile.data.id, userId, campaignContext });
+        const mappedRules = (ownedRules || []).map((r: any) => ({ id: r.id, title: r.title, category: r.category, severity: r.severity, isActive: r.is_active, statement: r.statement, prohibitedPatterns: r.prohibited_patterns || [], approvedSubstitutions: r.approved_substitutions || [], mandatoryCopy: r.mandatory_copy || undefined, regexPattern: r.regex_pattern || undefined, placementRequirement: r.placement_requirement || undefined }));
+        const auditResponse = await auditWithGeminiRAG({ copy, rules: mappedRules, brandProfileId: profile.data.id, userId, campaignContext });
 
         return sendJson(res, 200, auditResponse);
       }
