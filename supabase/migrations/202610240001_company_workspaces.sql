@@ -59,3 +59,8 @@ grant execute on function public.create_company_workspace(text) to authenticated
 -- Before production use, tenant IDs and authorization must also be enforced in all
 -- brand/document/rule/report tables and in server API/RAG endpoints. Do not deploy
 -- with company data until those checks and cross-tenant tests are complete.
+
+
+-- Explicit Data API privileges: RLS still controls which rows are visible.
+grant usage on schema public to authenticated;
+grant select on public.companies, public.company_memberships to authenticated;
