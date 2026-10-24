@@ -33,7 +33,7 @@ export const AuditReportScreen: React.FC<AuditReportScreenProps> = ({
   };
 
   const isAllFixed = fixedRules['BG-001'] && fixedRules['BG-002'] && fixedRules['BG-003'];
-  const displayScore = isAllFixed ? 100 : (Object.keys(fixedRules).length > 0 ? 76 : report.healthScore);
+  const displayScore = isAllFixed ? 100 : (Object.keys(fixedRules).length > 0 ? 76 : (report?.healthScore ?? 0));
 
   const handleCopyApproved = () => {
     if (!report) return;
