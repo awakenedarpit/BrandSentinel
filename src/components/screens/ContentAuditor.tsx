@@ -14,7 +14,6 @@ export const ContentAuditor: React.FC<ContentAuditorProps> = ({
 }) => {
   const [campaignName, setCampaignName] = useState('');
   const [publishingSurface, setPublishingSurface] = useState('Social Media');
-  const [activeScenario, setActiveScenario] = useState<'A' | 'B' | 'custom'>('custom');
   const [copyText, setCopyText] = useState('');
   const [highlightedRuleId, setHighlightedRuleId] = useState<string | null>(null);
   const [isAuditing, setIsAuditing] = useState(false);
@@ -30,7 +29,6 @@ export const ContentAuditor: React.FC<ContentAuditorProps> = ({
   const estimatedTokens = Math.round(charCount / 4.2);
 
   const loadScenarioA = () => {
-    setActiveScenario('custom');
     setCopyText('');
     setAiAuditResult(null);
     setHighlightedRuleId(null);
@@ -115,7 +113,7 @@ export const ContentAuditor: React.FC<ContentAuditorProps> = ({
             </span>
             <span className="text-outline-variant">•</span>
             <span className="font-label-code text-label-code text-on-surface-variant font-medium">
-              Session #AUD-8842-NVF
+              New audit session
             </span>
           </div>
           <h1 className="font-headline-lg text-headline-lg text-on-surface tracking-tight">
@@ -131,7 +129,7 @@ export const ContentAuditor: React.FC<ContentAuditorProps> = ({
           <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-surface-container text-on-surface">
             <span className="w-2 h-2 rounded-full bg-secondary-container"></span>
             <span className="font-label-meta text-label-meta text-on-surface">
-              Brand: <strong className="font-semibold text-primary">NovaFit</strong>
+              Brand: <strong className="font-semibold text-primary">Your workspace</strong>
             </span>
           </div>
           <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-surface-container text-on-surface">
@@ -264,31 +262,6 @@ export const ContentAuditor: React.FC<ContentAuditorProps> = ({
                 </div>
               </div>
 
-              {/* Scenario Toggles */}
-              <div className="flex items-center gap-1.5">
-                <button
-                  onClick={loadScenarioA}
-                  className={`px-2.5 py-1 rounded font-label-meta text-label-meta tracking-wide uppercase transition-all flex items-center gap-1 font-semibold ${
-                    activeScenario === 'A'
-                      ? 'bg-error-container text-on-error-container shadow-sm'
-                      : 'bg-surface-container text-on-surface-variant hover:text-on-surface'
-                  }`}
-                >
-                  <span className="w-1.5 h-1.5 rounded-full bg-error"></span>
-                  Scenario A (Non-Compliant)
-                </button>
-                <button
-                  onClick={loadScenarioB}
-                  className={`px-2.5 py-1 rounded font-label-meta text-label-meta tracking-wide uppercase transition-all flex items-center gap-1 font-semibold ${
-                    activeScenario === 'B'
-                      ? 'bg-[#ecfdf5] text-[#10b981] shadow-sm'
-                      : 'bg-surface-container text-on-surface-variant hover:text-on-surface'
-                  }`}
-                >
-                  <span className="w-1.5 h-1.5 rounded-full bg-[#10b981]"></span>
-                  Scenario B (Compliant)
-                </button>
-              </div>
             </div>
 
             {/* Editable Text Area with Visual Annotations */}
