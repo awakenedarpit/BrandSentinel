@@ -200,7 +200,7 @@ export const App: React.FC = () => {
 
           {currentScreen === 'audit-history' && (
             <AuditHistoryScreen
-              onOpenReport={() => setCurrentScreen('detailed-report')}
+              onOpenReport={(report) => { setActiveReport(report); setCurrentScreen('detailed-report'); }}
             />
           )}
 
