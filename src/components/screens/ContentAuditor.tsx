@@ -35,7 +35,7 @@ export const ContentAuditor: React.FC<ContentAuditorProps> = ({
     const updated = applyRemediation(copyText, finding);
     setCopyText(updated);
     setAiAuditResult(null);
-    setActiveScenario('custom');
+
     setActionNotice(`Applied fix for ${ruleId}: Replaced with compliant phrasing.`);
     setTimeout(() => setActionNotice(null), 3000);
   };
@@ -47,7 +47,7 @@ export const ContentAuditor: React.FC<ContentAuditorProps> = ({
     const updated = applyRemediation(copyText, disclaimerFinding);
     setCopyText(updated);
     setAiAuditResult(null);
-    setActiveScenario('custom');
+
     setActionNotice('Mandatory legal disclaimer appended to copy.');
     setTimeout(() => setActionNotice(null), 3000);
   };
@@ -55,7 +55,7 @@ export const ContentAuditor: React.FC<ContentAuditorProps> = ({
   const handleClear = () => {
     setCopyText('');
     setAiAuditResult(null);
-    setActiveScenario('custom');
+
     setHighlightedRuleId(null);
   };
 
@@ -258,7 +258,7 @@ export const ContentAuditor: React.FC<ContentAuditorProps> = ({
                 onChange={(e) => {
                   setCopyText(e.target.value);
                   setAiAuditResult(null);
-                  setActiveScenario('custom');
+
                 }}
                 rows={5}
                 className="w-full font-body-lg text-body-lg text-on-surface leading-relaxed focus:outline-none resize-y bg-transparent"
