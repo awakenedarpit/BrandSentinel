@@ -10,7 +10,6 @@ import { AuditHistoryScreen } from './components/screens/AuditHistoryScreen';
 import { SettingsScreen } from './components/screens/SettingsScreen';
 import { ImportModal } from './components/modals/ImportModal';
 import { HelpDocumentationModal } from './components/modals/HelpDocumentationModal';
-import { initialBrandRules } from './modules/rules/rulesData';
 import { BrandRule, AuditReport } from './types';
 import { checkSupabaseConnection } from './lib/supabase';
 import { fetchBrandRules, toggleBrandRuleInDb, insertBrandRuleToDb } from './services/brandService';
@@ -18,7 +17,7 @@ import { saveAuditReportToDb } from './services/auditService';
 
 export const App: React.FC = () => {
   const [currentScreen, setCurrentScreen] = useState<ScreenId>('content-auditor');
-  const [brandRules, setBrandRules] = useState<BrandRule[]>(initialBrandRules);
+  const [brandRules, setBrandRules] = useState<BrandRule[]>([]);
   const [activeReport, setActiveReport] = useState<AuditReport | null>(null);
   const [dbStatus, setDbStatus] = useState<{ connected: boolean; message: string }>({
     connected: false,
@@ -37,9 +36,7 @@ export const App: React.FC = () => {
       setDbStatus(status);
 
       const rulesRes = await fetchBrandRules();
-      if (rulesRes.rules && rulesRes.rules.length > 0) {
-        setBrandRules(rulesRes.rules);
-      }
+      setBrandRules(rulesRes.rules || []);
     }
     initDatabase();
   }, []);
@@ -79,9 +76,7 @@ export const App: React.FC = () => {
 
     // Refresh brand rules so newly extracted rules immediately appear in the auditor
     const rulesRes = await fetchBrandRules();
-    if (rulesRes.rules && rulesRes.rules.length > 0) {
-      setBrandRules(rulesRes.rules);
-    }
+    setBrandRules(rulesRes.rules || []);
   };
 
 
@@ -103,8 +98,8 @@ export const App: React.FC = () => {
   const searchScreens = [
     { id: 'overview' as ScreenId, title: 'Overview Dashboard', desc: 'Compliance health index, active metrics, telemetry' },
     { id: 'content-auditor' as ScreenId, title: 'Content Auditor', desc: 'Live workspace, Scenario A & B, real-time token highlights' },
-    { id: 'detailed-report' as ScreenId, title: 'Detailed Audit Report', desc: 'Forensic #AUD-2025-0894 report, RAG citations' },
-    { id: 'brand-guidelines' as ScreenId, title: 'Brand Guidelines', desc: 'NovaFit policy ruleset, BG-001 through BG-008' },
+    { id: 'detailed-report' as ScreenId, title: 'Detailed Audit Report', desc: 'Your account-specific audit report and citations' },
+    { id: 'brand-guidelines' as ScreenId, title: 'Brand Guidelines', desc: 'Your account-specific brand policies and rules' },
     { id: 'knowledge-base' as ScreenId, title: 'Knowledge Base', desc: 'Brand PDFs, vector embeddings, chunk explorer' },
     { id: 'audit-history' as ScreenId, title: 'Audit History', desc: 'Full permanent ledger of past campaign audits' },
     { id: 'settings' as ScreenId, title: 'Settings', desc: 'Brand identity parameters, AI model selection, reviewers' }
@@ -135,7 +130,7 @@ export const App: React.FC = () => {
           }}
           onSearchFocus={() => setIsSearchActive(true)}
           onBrandSwitch={() => setCurrentScreen('settings')}
-          brandName="NovaFit (Fitness & Wellness)"
+          brandName="Your Brand Workspace"
           dbStatus={dbStatus}
         />
 
