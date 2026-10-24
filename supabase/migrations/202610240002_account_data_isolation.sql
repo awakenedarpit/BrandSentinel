@@ -16,6 +16,7 @@ drop policy if exists "Users manage own brand profiles" on public.brand_profiles
 create policy "Users manage own brand profiles" on public.brand_profiles for all to authenticated
 using (user_id = (select auth.uid())) with check (user_id = (select auth.uid()));
 
+drop policy if exists "Users can view own or default brand rules" on public.brand_rules;
 drop policy if exists "Users manage own brand rules" on public.brand_rules;
 create policy "Users manage own brand rules" on public.brand_rules for all to authenticated
 using (user_id = (select auth.uid())) with check (user_id = (select auth.uid()));
@@ -24,10 +25,12 @@ drop policy if exists "Users manage own audit reports" on public.audit_reports;
 create policy "Users manage own audit reports" on public.audit_reports for all to authenticated
 using (user_id = (select auth.uid())) with check (user_id = (select auth.uid()));
 
+drop policy if exists "Users can view own or shared knowledge docs" on public.knowledge_documents;
 drop policy if exists "Users manage own knowledge documents" on public.knowledge_documents;
 create policy "Users manage own knowledge documents" on public.knowledge_documents for all to authenticated
 using (user_id = (select auth.uid())) with check (user_id = (select auth.uid()));
 
+drop policy if exists "Users can view own or shared document chunks" on public.document_chunks;
 drop policy if exists "Users manage own document chunks" on public.document_chunks;
 create policy "Users manage own document chunks" on public.document_chunks for all to authenticated
 using (user_id = (select auth.uid())) with check (user_id = (select auth.uid()));
