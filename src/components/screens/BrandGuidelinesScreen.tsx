@@ -217,7 +217,7 @@ export const BrandGuidelinesScreen: React.FC<BrandGuidelinesScreenProps> = ({
             <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-surface-container-low text-on-surface">
               <span className="material-symbols-outlined text-[#10b981] text-[18px]">verified</span>
               <span className="font-body-sm text-body-sm text-on-surface font-medium truncate max-w-xs">
-                Extracted <span className="text-primary font-semibold">8 rules</span> from <span className="font-label-code text-label-code font-semibold">NovaFit_Compliance_Manual_2025.pdf</span>
+                Extracted <span className="text-primary font-semibold">8 rules</span> from <span className="font-label-code text-label-code font-semibold">your brand_Compliance_Manual_2025.pdf</span>
               </span>
             </div>
             <button
@@ -254,7 +254,7 @@ export const BrandGuidelinesScreen: React.FC<BrandGuidelinesScreenProps> = ({
             </button>
             <span className="font-label-code text-[11px] text-on-surface-variant">or</span>
             <button
-              onClick={() => alert('Notion Workspace Integration: Connected to NovaFit Marketing Hub.')}
+              onClick={() => alert('Notion Workspace Integration: Connected to your brand Marketing Hub.')}
               className="px-space-md py-1.5 rounded-lg bg-surface-container-lowest hover:bg-surface-container-high text-primary text-body-sm font-semibold transition-colors shadow-sm flex items-center gap-1"
             >
               <span className="material-symbols-outlined text-[16px]">link</span>
