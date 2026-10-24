@@ -988,12 +988,13 @@ export async function auditWithGeminiRAG(params: {
   copy: string;
   rules: any[];
   brandProfileId: string;
+  userId: string;
   campaignContext?: {
     campaignName?: string;
     publishingSurface?: string;
   };
 }) {
-  const { copy, rules, brandProfileId, campaignContext } = params;
+  const { copy, rules, brandProfileId, userId, campaignContext } = params;
 
   if (!copy || !copy.trim()) {
     return {
@@ -1015,7 +1016,8 @@ export async function auditWithGeminiRAG(params: {
   // 1. Retrieve top matching chunks
   const retrievedChunks = await retrieveRelevantChunks(copy, brandProfileId, {
     topK: 4,
-    threshold: 0.35
+    threshold: 0.35,
+    userId
   });
 
   // 2. Handle empty retrieval state explicitly:
