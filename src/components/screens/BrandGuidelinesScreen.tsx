@@ -32,12 +32,12 @@ export const BrandGuidelinesScreen: React.FC<BrandGuidelinesScreenProps> = ({
 
   // Category list with counts
   const categories: { label: string; count: number }[] = [
-    { label: 'All Rules', count: 24 },
-    { label: 'Brand Voice', count: 6 },
-    { label: 'Marketing Claims', count: 7 },
-    { label: 'Approved & Prohibited Phrases', count: 5 },
-    { label: 'Required Disclaimers', count: 4 },
-    { label: 'Terminology', count: 2 }
+    { label: 'All Rules', count: rules.length },
+    { label: 'Brand Voice', count: rules.filter(r => r.category === 'Brand Voice').length },
+    { label: 'Marketing Claims', count: rules.filter(r => r.category === 'Marketing Claims').length },
+    { label: 'Approved & Prohibited Phrases', count: rules.filter(r => r.category === 'Approved & Prohibited Phrases').length },
+    { label: 'Required Disclaimers', count: rules.filter(r => r.category === 'Required Disclaimers').length },
+    { label: 'Terminology', count: rules.filter(r => r.category === 'Terminology').length }
   ];
 
   // Filter rules
