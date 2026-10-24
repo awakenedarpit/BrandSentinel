@@ -44,7 +44,7 @@ export const AuditReportScreen: React.FC<AuditReportScreenProps> = ({
 
   const handleExportPdf = () => {
     setIsExportMenuOpen(false);
-    alert('Generating signed forensic PDF compliance certificate with SHA-256 policy stamps for #AUD-2025-0894.');
+    alert('Generating signed forensic PDF compliance certificate with SHA-256 policy stamps for #account audit report.');
   };
 
   const handleExportJson = () => {
@@ -393,7 +393,7 @@ export const AuditReportScreen: React.FC<AuditReportScreenProps> = ({
                     Forensic Analysis
                   </span>
                   <p className="text-on-surface">
-                    Direct breach of NovaFit's core scientific integrity policy and FTC marketing truth regulations. Fitness outcomes are intrinsically dependent on non-deterministic physiological variables.
+                    Direct breach of your brand's core scientific integrity policy and FTC marketing truth regulations. Fitness outcomes are intrinsically dependent on non-deterministic physiological variables.
                   </p>
                 </div>
               </div>
@@ -412,12 +412,12 @@ export const AuditReportScreen: React.FC<AuditReportScreenProps> = ({
                   </span>
                 </div>
                 <blockquote className="italic text-on-surface font-body-md text-body-md pl-3 bg-surface-container-high/40 py-2 rounded-r border-l-2 border-primary">
-                  “NovaFit communications must never promise guaranteed results or specific outcome timelines. Physical fitness adaptations differ by metabolic and lifestyle factors.”
+                  “your brand communications must never promise guaranteed results or specific outcome timelines. Physical fitness adaptations differ by metabolic and lifestyle factors.”
                 </blockquote>
                 <div className="flex flex-wrap items-center justify-between gap-2 pt-1 font-label-code text-label-code text-on-surface-variant">
                   <div className="flex items-center gap-1.5">
                     <span className="material-symbols-outlined text-[16px] text-error">picture_as_pdf</span>
-                    <span className="font-medium text-on-surface">NovaFit_Brand_Compliance_Manual_2025.pdf</span>
+                    <span className="font-medium text-on-surface">your brand_Brand_Compliance_Manual_2025.pdf</span>
                     <span className="text-on-surface-variant">— Section 3.2, Page 14</span>
                   </div>
                   <button onClick={onOpenGuidelines} className="text-primary hover:underline font-semibold flex items-center gap-1">
@@ -517,7 +517,7 @@ export const AuditReportScreen: React.FC<AuditReportScreenProps> = ({
                 <div className="flex flex-wrap items-center justify-between gap-2 pt-1 font-label-code text-label-code text-on-surface-variant">
                   <div className="flex items-center gap-1.5">
                     <span className="material-symbols-outlined text-[16px] text-error">picture_as_pdf</span>
-                    <span className="font-medium text-on-surface">NovaFit_Brand_Guidelines_Voice_Tone.pdf</span>
+                    <span className="font-medium text-on-surface">your brand_Brand_Guidelines_Voice_Tone.pdf</span>
                     <span className="text-on-surface-variant">— Page 8, Paragraph 3</span>
                   </div>
                   <button onClick={onOpenGuidelines} className="text-primary hover:underline font-semibold flex items-center gap-1">
