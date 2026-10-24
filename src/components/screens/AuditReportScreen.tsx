@@ -53,7 +53,7 @@ export const AuditReportScreen: React.FC<AuditReportScreenProps> = ({
     const jsonString = `data:text/json;charset=utf-8,${encodeURIComponent(JSON.stringify(report, null, 2))}`;
     const downloadAnchor = document.createElement('a');
     downloadAnchor.setAttribute('href', jsonString);
-    downloadAnchor.setAttribute('download', `BrandSentinel_Audit_AUD-2025-0894.json`);
+    downloadAnchor.setAttribute('download', `BrandSentinel_Account_Audit_Report.json`);
     document.body.appendChild(downloadAnchor);
     downloadAnchor.click();
     downloadAnchor.remove();
@@ -87,7 +87,7 @@ export const AuditReportScreen: React.FC<AuditReportScreenProps> = ({
           <div className="flex items-center gap-2">
             <span className="px-2.5 py-1 rounded bg-surface-container-high text-on-surface-variant font-label-code text-[10px] uppercase tracking-widest font-semibold flex items-center gap-1.5 shadow-sm">
               <span className="w-1.5 h-1.5 rounded-full bg-secondary"></span>
-              DEMO AUDIT RECORD
+              ACCOUNT AUDIT REPORT
             </span>
             <span
               className={`px-2.5 py-1 rounded-full font-label-meta text-label-meta uppercase tracking-wider flex items-center gap-1 font-semibold ${
@@ -226,7 +226,7 @@ export const AuditReportScreen: React.FC<AuditReportScreenProps> = ({
               </div>
 
               <button
-                onClick={() => alert(`Share link for #AUD-2025-0894 copied! Security token generated for internal risk reviewers.`)}
+                onClick={() => alert(`Share link for this account's audit report copied! Security token generated for internal risk reviewers.`)}
                 className="px-3.5 py-2 rounded-lg bg-primary text-on-primary hover:bg-primary-container font-body-sm text-body-sm font-semibold shadow-sm transition-all flex items-center gap-1.5"
               >
                 <span className="material-symbols-outlined text-[18px]">share</span>
@@ -778,7 +778,7 @@ export const AuditReportScreen: React.FC<AuditReportScreenProps> = ({
             <div className="flex flex-col gap-2 font-body-sm text-body-sm">
               <div className="flex items-center justify-between py-1.5 bg-surface-container-low/40 px-3 rounded-lg">
                 <span className="text-on-surface-variant font-label-meta text-label-meta uppercase tracking-wider">Vector Index</span>
-                <span className="font-label-code text-label-code font-semibold text-primary">novafit-primary-v2</span>
+                <span className="font-label-code text-label-code font-semibold text-primary">account-specific index</span>
               </div>
               <div className="flex items-center justify-between py-1.5 bg-surface-container-low/40 px-3 rounded-lg">
                 <span className="text-on-surface-variant font-label-meta text-label-meta uppercase tracking-wider">Knowledge Chunks</span>
