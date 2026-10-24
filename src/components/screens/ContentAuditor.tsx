@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { BrandRule, AuditReport } from '../../types';
 import { evaluateCopy, applyRemediation, createAuditReport } from '../../modules/audit/auditEngine';
-import { demoScenarioA, demoScenarioB } from '../../modules/data/demoData';
 import { auditTextWithAI, RAGAuditResponse } from '../../modules/ai/aiService';
 
 interface ContentAuditorProps {
@@ -13,10 +12,10 @@ export const ContentAuditor: React.FC<ContentAuditorProps> = ({
   brandRules,
   onOpenReport
 }) => {
-  const [campaignName, setCampaignName] = useState('NovaFit Summer Transformation Launch 2025');
+  const [campaignName, setCampaignName] = useState('');
   const [publishingSurface, setPublishingSurface] = useState('Social Media');
-  const [activeScenario, setActiveScenario] = useState<'A' | 'B' | 'custom'>('A');
-  const [copyText, setCopyText] = useState(demoScenarioA.copy);
+  const [activeScenario, setActiveScenario] = useState<'A' | 'B' | 'custom'>('custom');
+  const [copyText, setCopyText] = useState('');
   const [highlightedRuleId, setHighlightedRuleId] = useState<string | null>(null);
   const [isAuditing, setIsAuditing] = useState(false);
   const [actionNotice, setActionNotice] = useState<string | null>(null);
@@ -31,15 +30,15 @@ export const ContentAuditor: React.FC<ContentAuditorProps> = ({
   const estimatedTokens = Math.round(charCount / 4.2);
 
   const loadScenarioA = () => {
-    setActiveScenario('A');
-    setCopyText(demoScenarioA.copy);
+    setActiveScenario('custom');
+    setCopyText('');
     setAiAuditResult(null);
     setHighlightedRuleId(null);
   };
 
   const loadScenarioB = () => {
-    setActiveScenario('B');
-    setCopyText(demoScenarioB.copy);
+    setActiveScenario('custom');
+    setCopyText('');
     setAiAuditResult(null);
     setHighlightedRuleId(null);
   };
