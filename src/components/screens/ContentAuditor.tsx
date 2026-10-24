@@ -28,19 +28,6 @@ export const ContentAuditor: React.FC<ContentAuditorProps> = ({
   // Approximate token count
   const estimatedTokens = Math.round(charCount / 4.2);
 
-  const loadScenarioA = () => {
-    setCopyText('');
-    setAiAuditResult(null);
-    setHighlightedRuleId(null);
-  };
-
-  const loadScenarioB = () => {
-    setActiveScenario('custom');
-    setCopyText('');
-    setAiAuditResult(null);
-    setHighlightedRuleId(null);
-  };
-
   const handleApplyFix = (ruleId: string) => {
     const finding = findings.find(f => f.ruleId === ruleId);
     if (!finding) return;
