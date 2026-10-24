@@ -164,7 +164,6 @@ export function createRAGApiMiddleware(): Connect.NextHandleFunction {
           fileSize,
           base64Content,
           textContent,
-          brandProfileId,
           description
         } = payload;
 
