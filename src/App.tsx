@@ -65,7 +65,7 @@ export const App: React.FC = () => {
     if (!authData.user) { setNotificationBanner('Sign in before adding a rule.'); return; }
     const accountRule = { ...newRule, id: `${authData.user.id.slice(0, 8)}-${newRule.id}` };
     setBrandRules(prev => [accountRule, ...prev]);
-    setNotificationBanner(`New brand policy ${newRule.id} ("${newRule.title}") created.`);
+    setNotificationBanner(`New brand policy ${accountRule.id} ("${accountRule.title}") created.`);
     setTimeout(() => setNotificationBanner(null), 3500);
 
     // Persist to Supabase if configured
