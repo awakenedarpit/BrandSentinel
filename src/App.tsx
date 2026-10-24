@@ -61,12 +61,15 @@ export const App: React.FC = () => {
 
   // Add a newly defined brand rule
   const handleAddNewRule = async (newRule: BrandRule) => {
-    setBrandRules(prev => [newRule, ...prev]);
+    const { data: authData } = await (await import('./lib/supabase')).supabase.auth.getUser();
+    if (!authData.user) { setNotificationBanner('Sign in before adding a rule.'); return; }
+    const accountRule = { ...newRule, id: `${authData.user.id.slice(0, 8)}-${newRule.id}` };
+    setBrandRules(prev => [accountRule, ...prev]);
     setNotificationBanner(`New brand policy ${newRule.id} ("${newRule.title}") created.`);
     setTimeout(() => setNotificationBanner(null), 3500);
 
     // Persist to Supabase if configured
-    await insertBrandRuleToDb(newRule);
+    await insertBrandRuleToDb(accountRule);
   };
 
   // Handle RAG extraction completion
