@@ -3,7 +3,7 @@ import { AuditReport } from '../../types';
 import { fetchAuditHistory } from '../../services/auditService';
 
 interface AuditHistoryScreenProps {
-  onOpenReport: (reportId: string) => void;
+  onOpenReport: (report: AuditReport) => void;
 }
 
 export const AuditHistoryScreen: React.FC<AuditHistoryScreenProps> = ({
@@ -254,7 +254,7 @@ export const AuditHistoryScreen: React.FC<AuditHistoryScreenProps> = ({
                       </td>
                       <td className="py-3.5 px-4 text-right">
                         <button
-                          onClick={() => onOpenReport(item.id)}
+                          onClick={() => onOpenReport(item)}
                           className="px-3 py-1.5 rounded-lg bg-surface-container hover:bg-surface-container-high text-primary font-semibold text-body-sm transition-colors"
                         >
                           Inspect Report
