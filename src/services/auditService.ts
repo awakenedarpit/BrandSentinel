@@ -102,7 +102,7 @@ export async function saveAuditReportToDb(report: AuditReport): Promise<{ succes
   try {
     const { data: authData, error: authError } = await supabase.auth.getUser();
     if (authError || !authData.user) return { success: false, error: 'Sign in before saving audit reports.' };
-    const insertPayload = { ...mapAuditReportToInsert(report), user_id: authData.user.id };
+    const insertPayload = { ...mapAuditReportToInsert(report), id: `${authData.user.id.slice(0, 8)}-${report.id}`, user_id: authData.user.id };
     const { error } = await supabase
       .from('audit_reports')
       .upsert(insertPayload, { onConflict: 'id' });
