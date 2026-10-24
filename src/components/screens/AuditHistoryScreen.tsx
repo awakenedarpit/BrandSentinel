@@ -76,7 +76,7 @@ export const AuditHistoryScreen: React.FC<AuditHistoryScreenProps> = ({
             Audit History & Records
           </h1>
           <p className="font-body-md text-body-md text-on-surface-variant">
-            Forensic archive of marketing assets audited against NovaFit brand safety policies.
+            Forensic archive of marketing assets audited against your brand brand safety policies.
           </p>
         </div>
 
@@ -126,7 +126,7 @@ export const AuditHistoryScreen: React.FC<AuditHistoryScreenProps> = ({
             type="text"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder="Search audits by campaign, ID (e.g. AUD-2025-0894), or copy..."
+            placeholder="Search audits by campaign, ID (e.g. account audit report), or copy..."
             className="w-full pl-10 pr-4 py-2 rounded-xl bg-surface-container-low text-on-surface placeholder:text-on-surface-variant font-body-md text-body-md outline-none focus:ring-2 focus:ring-primary/20 transition-all"
           />
         </div>
