@@ -237,12 +237,12 @@ Any mention of "Free Trial" must immediately clarify: "Auto-renews at $14.99/mo 
             Cancel
           </button>
           <button
-            onClick={() => handleStartPresetExtraction(selectedPreset || 'NovaFit_Compliance_Manual_2025.pdf')}
+            onClick={() => fileInputRef.current?.click()}
             disabled={isProcessing}
             className="px-4 py-2 rounded-lg bg-primary text-on-primary font-body-sm text-body-sm font-semibold shadow-sm hover:bg-primary-container transition-all flex items-center gap-1.5"
           >
             <span className="material-symbols-outlined text-[16px]">bolt</span>
-            <span>{isProcessing ? 'Ingesting with Gemini...' : 'Run RAG Ingestion'}</span>
+            <span>{isProcessing ? 'Ingesting with Gemini...' : 'Choose your own document'}</span>
           </button>
         </div>
       </div>
