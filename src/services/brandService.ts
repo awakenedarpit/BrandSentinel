@@ -1,7 +1,7 @@
 import { supabase, isSupabaseConfigured } from '../lib/supabase';
 import { BrandRule, BrandProfile } from '../types';
 import { Database } from '../types/database';
-import { initialBrandRules, novaFitBrandProfile } from '../modules/rules/rulesData';
+
 
 export function mapRowToBrandRule(row: Database['public']['Tables']['brand_rules']['Row']): BrandRule {
   return {
@@ -57,27 +57,26 @@ export function mapBrandRuleToInsert(rule: BrandRule): Database['public']['Table
   };
 }
 
-/**
- * Fetch Brand Rules from Supabase (with fallback to local rules)
- */
+/** Fetch only the signed-in user's rules. Never substitute demo rules. */
 export async function fetchBrandRules(): Promise<{ rules: BrandRule[]; source: 'supabase' | 'local'; error?: string }> {
-  if (!isSupabaseConfigured()) {
-    return { rules: initialBrandRules, source: 'local' };
-  }
+  if (!isSupabaseConfigured()) return { rules: [], source: 'local', error: 'Supabase is not configured.' };
 
   try {
+    const { data: authData, error: authError } = await supabase.auth.getUser();
+    if (authError || !authData.user) return { rules: [], source: 'local', error: 'Sign in to load brand rules.' };
     const { data, error } = await supabase
       .from('brand_rules')
       .select('*')
+      .eq('user_id', authData.user.id)
       .order('id', { ascending: true });
 
     if (error) {
-      console.warn('[BrandSentinel] Failed to fetch brand rules from Supabase, using local rules:', error.message);
-      return { rules: initialBrandRules, source: 'local', error: error.message };
+      console.warn('[BrandSentinel] Failed to fetch brand rules:', error.message);
+      return { rules: [], source: 'local', error: error.message };
     }
 
     if (!data || data.length === 0) {
-      return { rules: initialBrandRules, source: 'local' };
+      return { rules: [], source: 'supabase' };
     }
 
     return {
@@ -86,7 +85,7 @@ export async function fetchBrandRules(): Promise<{ rules: BrandRule[]; source: '
     };
   } catch (err: any) {
     console.warn('[BrandSentinel] Error querying Supabase brand rules:', err);
-    return { rules: initialBrandRules, source: 'local', error: err.message };
+    return { rules: [], source: 'local', error: err.message };
   }
 }
 
@@ -99,10 +98,13 @@ export async function toggleBrandRuleInDb(ruleId: string, isActive: boolean): Pr
   }
 
   try {
+    const { data: authData, error: authError } = await supabase.auth.getUser();
+    if (authError || !authData.user) return { success: false, error: 'Sign in before changing rules.' };
     const { error } = await supabase
       .from('brand_rules')
       .update({ is_active: isActive })
-      .eq('id', ruleId);
+      .eq('id', ruleId)
+      .eq('user_id', authData.user.id);
 
     if (error) {
       console.warn(`[BrandSentinel] Failed to update rule ${ruleId} in Supabase:`, error.message);
@@ -124,7 +126,9 @@ export async function insertBrandRuleToDb(newRule: BrandRule): Promise<{ success
   }
 
   try {
-    const insertPayload = mapBrandRuleToInsert(newRule);
+    const { data: authData, error: authError } = await supabase.auth.getUser();
+    if (authError || !authData.user) return { success: false, error: 'Sign in before adding rules.' };
+    const insertPayload = { ...mapBrandRuleToInsert(newRule), user_id: authData.user.id };
     const { error } = await supabase
       .from('brand_rules')
       .insert(insertPayload);
@@ -144,36 +148,37 @@ export async function insertBrandRuleToDb(newRule: BrandRule): Promise<{ success
  * Fetch Brand Profile
  */
 export async function fetchBrandProfile(): Promise<{ profile: BrandProfile; source: 'supabase' | 'local'; error?: string }> {
-  if (!isSupabaseConfigured()) {
-    return { profile: novaFitBrandProfile, source: 'local' };
-  }
+  if (!isSupabaseConfigured()) return { profile: { name: '', tagline: '', industry: '', voicePersona: [], activeVersion: '', primaryContact: { name: '', title: '', email: '' } }, source: 'local', error: 'Supabase is not configured.' };
 
   try {
+    const { data: authData, error: authError } = await supabase.auth.getUser();
+    if (authError || !authData.user) return { profile: { name: '', tagline: '', industry: '', voicePersona: [], activeVersion: '', primaryContact: { name: '', title: '', email: '' } }, source: 'local', error: 'Sign in to load your brand profile.' };
     const { data, error } = await supabase
       .from('brand_profiles')
       .select('*')
+      .eq('user_id', authData.user.id)
       .limit(1)
       .maybeSingle();
 
     if (error || !data) {
-      return { profile: novaFitBrandProfile, source: 'local', error: error?.message };
+      return { profile: { name: '', tagline: '', industry: '', voicePersona: [], activeVersion: '', primaryContact: { name: '', title: '', email: '' } }, source: 'supabase', error: error?.message };
     }
 
     const profile: BrandProfile = {
       name: data.name,
-      tagline: data.tagline || 'Fitness & Wellness Governance',
-      industry: data.industry || 'Health, Wellness & Connected Fitness',
-      voicePersona: data.voice_persona || ['Encouraging', 'Realistic', 'Inclusive'],
-      activeVersion: data.active_version || 'v2.8 (Synced)',
+      tagline: data.tagline || '',
+      industry: data.industry || '',
+      voicePersona: data.voice_persona || [],
+      activeVersion: data.active_version || '',
       primaryContact: {
-        name: data.primary_contact_name || 'Elena Vance',
-        title: data.primary_contact_title || 'VP Brand Governance',
-        email: data.primary_contact_email || 'elena.vance@novafit.internal'
+        name: data.primary_contact_name || '',
+        title: data.primary_contact_title || '',
+        email: data.primary_contact_email || ''
       }
     };
 
     return { profile, source: 'supabase' };
   } catch (err: any) {
-    return { profile: novaFitBrandProfile, source: 'local', error: err.message };
+    return { profile: { name: '', tagline: '', industry: '', voicePersona: [], activeVersion: '', primaryContact: { name: '', title: '', email: '' } }, source: 'local', error: err.message };
   }
 }
