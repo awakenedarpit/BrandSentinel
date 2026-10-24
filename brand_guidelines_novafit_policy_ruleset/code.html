@@ -1,0 +1,713 @@
+<!DOCTYPE html>
+
+<html lang="en"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0" name="viewport"/><meta content="web_dashboard" name="shell-type"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&family=JetBrains+Mono:wght@100..900&display=swap" rel="stylesheet"/><style>@layer base{html,body{margin:0;padding:0;}body{overscroll-behavior:none;}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config={darkMode:"class",theme:{extend:{colors:{"surface-container-highest":"#d7e2ff","tertiary-container":"#515b79","on-secondary-fixed-variant":"#003baf","secondary-fixed":"#dce1ff","tertiary":"#3a4361","primary":"#4003d1","on-surface":"#0f1b31","error":"#ba1a1a","on-tertiary":"#ffffff","on-primary-fixed-variant":"#430dd4","on-tertiary-fixed":"#101a35","surface-bright":"#f9f9ff","surface-container-lowest":"#ffffff","inverse-primary":"#c8bfff","surface":"#f9f9ff","outline":"#787587","secondary-fixed-dim":"#b6c4ff","on-secondary-fixed":"#00164e","primary-fixed-dim":"#c8bfff","secondary":"#004ddf","tertiary-fixed-dim":"#bcc5e9","primary-container":"#5936e8","on-primary-container":"#d6ceff","surface-container":"#e8eeff","on-tertiary-container":"#cad3f7","secondary-container":"#3168fc","on-secondary-container":"#fffbff","on-surface-variant":"#484556","on-background":"#0f1b31","on-primary-fixed":"#1a0064","surface-container-high":"#e0e8ff","inverse-on-surface":"#ecf0ff","surface-dim":"#cedaf8","primary-fixed":"#e5deff","on-error-container":"#93000a","on-primary":"#ffffff","on-error":"#ffffff","inverse-surface":"#243047","tertiary-fixed":"#dbe1ff","background":"#f9f9ff","surface-tint":"#5c3aeb","surface-container-low":"#f1f3ff","error-container":"#ffdad6","surface-variant":"#d7e2ff","on-secondary":"#ffffff","outline-variant":"#c9c4d8","on-tertiary-fixed-variant":"#3c4663"},borderRadius:{DEFAULT:"0.25rem",lg:"0.5rem",xl:"0.75rem",full:"9999px"},spacing:{"space-xs":"0.25rem","space-lg":"1.5rem","space-sm":"0.5rem",gutter:"1.5rem","space-md":"1rem",margin:"2rem","space-xl":"2rem"},fontFamily:{"headline-sm":["Inter"],"label-meta":["Inter"],"body-sm":["Inter"],"headline-md":["Inter"],"body-md":["Inter"],"headline-lg":["Inter"],"body-lg":["Inter"],"display-hero":["Inter"],"label-code":["JetBrains Mono"]},fontSize:{"headline-sm":["18px",{lineHeight:"24px",letterSpacing:"-0.015em",fontWeight:"600"}],"label-meta":["11px",{lineHeight:"14px",letterSpacing:"0.06em",fontWeight:"600"}],"body-sm":["12px",{lineHeight:"16px",letterSpacing:"0em",fontWeight:"400"}],"headline-md":["22px",{lineHeight:"28px",letterSpacing:"-0.02em",fontWeight:"600"}],"body-md":["14px",{lineHeight:"20px",letterSpacing:"0em",fontWeight:"400"}],"headline-lg":["30px",{lineHeight:"38px",letterSpacing:"-0.025em",fontWeight:"600"}],"body-lg":["16px",{lineHeight:"24px",letterSpacing:"-0.01em",fontWeight:"400"}],"display-hero":["40px",{lineHeight:"48px",letterSpacing:"-0.03em",fontWeight:"700"}],"label-code":["11px",{lineHeight:"14px",letterSpacing:"0.04em",fontWeight:"500"}]}}}}</script></head><body class="bg-background font-body-md text-on-surface antialiased"><aside class="fixed left-0 top-0 h-full w-[260px] bg-surface-container-lowest shadow-[0_1px_8px_rgba(16,26,53,0.04)] z-50 flex flex-col justify-between"><div class="flex flex-col"><div class="h-16 px-space-md flex items-center gap-space-sm bg-surface-container-lowest"><img alt="BrandSentinel Shield Logo" class="h-8 w-auto object-contain" src="https://lh3.googleusercontent.com/aida/AEtjO1VZA5BjkW18s9r-3f-5grN3CuBjmVDIwSr66dMmKM1laF4Lw4XGt0oKSzj3mTRRw2_XWs2Ocawc3n65a046BTzr8CTQt3EKa8xLKXQDq8hfng6QbsQUZfb5UemZ2Q6TseTiUMU3y1Ct2JC84LI_1h3_YQAoAv3jorQvgJcNKCspJje-z_NF2DDs9pa7C-J8_i83-YNXxFtsnh0mGSR4FNi9XkZv6cA6ItmNLr7T0OdmSw"/><div class="flex items-center gap-space-xs"><span class="font-headline-sm text-headline-sm text-on-surface tracking-tight">BrandSentinel</span><span class="px-1.5 py-0.5 rounded bg-primary-container font-label-code text-label-code text-on-primary-container font-semibold">AI</span></div></div><div class="px-space-md py-1"><div class="flex items-center gap-1.5 px-2 py-1 rounded bg-surface-container-low text-on-surface-variant text-[11px]"><span class="material-symbols-outlined text-[14px] text-primary">verified_user</span><span class="truncate font-label-meta text-label-meta uppercase tracking-wider">Protect What Matters</span></div></div><nav class="flex flex-col gap-1 px-space-sm mt-space-md" data-active-classes="bg-primary-container text-on-primary-container font-semibold shadow-sm"><a class="flex items-center justify-between px-3 py-2 rounded-lg text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-colors" data-path="overview" href="#"><div class="flex items-center gap-2.5"><span class="material-symbols-outlined text-[18px]">grid_view</span><span class="font-body-md text-body-md">Overview</span></div></a><a class="flex items-center justify-between px-3 py-2 rounded-lg text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-colors" data-path="content-auditor" href="#"><div class="flex items-center gap-2.5"><span class="material-symbols-outlined text-[18px]">fact_check</span><span class="font-body-md text-body-md">Content Auditor</span></div><span class="px-1.5 py-0.5 rounded-full bg-secondary-fixed text-on-secondary-fixed-variant font-label-meta text-[10px] tracking-wide uppercase">Core</span></a><a class="flex items-center justify-between px-3 py-2 rounded-lg text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-colors" data-path="detailed-report" href="#"><div class="flex items-center gap-2.5"><span class="material-symbols-outlined text-[18px]">analytics</span><span class="font-body-md text-body-md">Detailed Report</span></div></a><a aria-current="page" class="flex items-center justify-between px-3 py-2 rounded-lg transition-colors bg-primary-container text-on-primary-container font-semibold shadow-sm" data-path="brand-guidelines" href="#"><div class="flex items-center gap-2.5"><span class="material-symbols-outlined text-[18px]">rule</span><span class="font-body-md text-body-md">Brand Guidelines</span></div></a><a class="flex items-center justify-between px-3 py-2 rounded-lg text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-colors" data-path="knowledge-base" href="#"><div class="flex items-center gap-2.5"><span class="material-symbols-outlined text-[18px]">menu_book</span><span class="font-body-md text-body-md">Knowledge Base</span></div></a><a class="flex items-center justify-between px-3 py-2 rounded-lg text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-colors" data-path="audit-history" href="#"><div class="flex items-center gap-2.5"><span class="material-symbols-outlined text-[18px]">history</span><span class="font-body-md text-body-md">Audit History</span></div></a><a class="flex items-center justify-between px-3 py-2 rounded-lg text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-colors" data-path="settings" href="#"><div class="flex items-center gap-2.5"><span class="material-symbols-outlined text-[18px]">settings</span><span class="font-body-md text-body-md">Settings</span></div></a></nav></div><div class="flex flex-col gap-space-xs p-space-sm bg-surface-container-lowest"><button class="w-full flex items-center justify-between px-2.5 py-1.5 rounded-lg bg-surface-container-low text-on-surface hover:bg-surface-container transition-colors text-left"><div class="flex items-center gap-2 min-w-0"><span class="material-symbols-outlined text-primary text-[18px]">domain</span><div class="truncate"><p class="font-label-meta text-[10px] text-on-surface-variant uppercase tracking-wider leading-none">Workspace</p><p class="font-body-sm text-body-sm font-semibold truncate">Enterprise Brand Ops</p></div></div><span class="material-symbols-outlined text-on-surface-variant text-[16px]">unfold_more</span></button><a class="flex items-center gap-2 px-2.5 py-1.5 rounded-lg text-on-surface-variant hover:text-on-surface hover:bg-surface-container transition-colors" data-path="documentation" href="#"><span class="material-symbols-outlined text-[18px]">help_outline</span><span class="font-body-sm text-body-sm">Help & Documentation</span></a><div class="flex items-center justify-between p-2 rounded-lg bg-surface-container-low"><div class="flex items-center gap-2.5 min-w-0"><div class="relative flex-shrink-0"><div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center"><span class="material-symbols-outlined text-on-primary text-[18px]">person</span></div><span class="absolute bottom-0 right-0 w-2.5 h-2.5 rounded-full bg-[#10b981] ring-2 ring-surface-container-lowest"></span></div><div class="truncate"><p class="font-body-sm text-body-sm font-semibold leading-tight text-on-surface truncate">Elena Vance</p><p class="font-label-meta text-[10px] text-on-surface-variant truncate">VP Brand Governance</p></div></div><span class="material-symbols-outlined text-on-surface-variant text-[16px]">more_vert</span></div></div></aside><div class="pl-[260px]"><header class="fixed top-0 left-[260px] right-0 h-16 bg-surface-container-lowest/90 backdrop-blur-xl shadow-[0_1px_8px_rgba(16,26,53,0.04)] z-40 flex items-center justify-between px-space-lg"><div class="flex items-center gap-space-md"><div class="flex items-center gap-2"><img alt="BrandSentinel Shield Logo" class="h-8 w-auto object-contain" src="https://lh3.googleusercontent.com/aida/AEtjO1VZA5BjkW18s9r-3f-5grN3CuBjmVDIwSr66dMmKM1laF4Lw4XGt0oKSzj3mTRRw2_XWs2Ocawc3n65a046BTzr8CTQt3EKa8xLKXQDq8hfng6QbsQUZfb5UemZ2Q6TseTiUMU3y1Ct2JC84LI_1h3_YQAoAv3jorQvgJcNKCspJje-z_NF2DDs9pa7C-J8_i83-YNXxFtsnh0mGSR4FNi9XkZv6cA6ItmNLr7T0OdmSw"/><span class="font-headline-sm text-headline-sm text-on-surface tracking-tight hidden lg:inline">BrandSentinel</span></div><span class="px-2 py-0.5 rounded bg-surface-container text-on-surface-variant font-label-code text-label-code uppercase tracking-wider">Demo Workspace</span></div><div class="flex items-center gap-space-md"><button class="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-surface-container-low hover:bg-surface-container text-on-surface transition-colors"><span class="material-symbols-outlined text-secondary text-[18px]">local_fire_department</span><span class="font-body-sm text-body-sm font-semibold">NovaFit (Fitness & Wellness)</span><span class="material-symbols-outlined text-on-surface-variant text-[16px]">arrow_drop_down</span></button><div class="hidden md:flex items-center gap-2 px-3 py-1.5 rounded-lg bg-surface-container-low text-on-surface-variant"><span class="material-symbols-outlined text-[16px]">search</span><span class="font-body-sm text-body-sm">Search or audit...</span><kbd class="px-1.5 py-0.5 rounded bg-surface-container font-label-code text-label-code text-on-surface-variant">⌘K</kbd></div><div class="hidden xl:flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-surface-container-high text-on-surface"><span class="w-2 h-2 rounded-full bg-[#10b981]"></span><span class="font-label-meta text-label-meta text-on-surface">Vector Index Synced</span></div><button class="relative p-2 rounded-lg text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-colors"><span class="material-symbols-outlined text-[20px]">notifications</span><span class="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-error"></span></button><button class="flex items-center gap-1.5 px-space-md py-2 rounded-lg bg-primary-container text-on-primary font-body-sm text-body-sm font-semibold shadow-[0_1px_2px_rgba(16,26,53,0.1)] hover:bg-secondary-container transition-all"><span class="material-symbols-outlined text-[18px]">add</span><span>New Audit</span></button><div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center"><span class="material-symbols-outlined text-on-primary text-[18px]">person</span></div></div></header><main class="w-full pt-16 bg-background px-space-lg py-space-lg"><div class="flex flex-col w-full">
+<!-- Top Meta Scrim & Sub-header -->
+<div class="relative overflow-hidden rounded-2xl bg-surface-container-lowest shadow-sm mb-space-lg p-space-lg">
+<div class="absolute -top-16 -right-16 w-80 h-80 rounded-full bg-gradient-to-br from-primary-container/10 via-secondary-container/10 to-transparent blur-3xl pointer-events-none"></div>
+<div class="relative z-10 flex flex-col xl:flex-row xl:items-center xl:justify-between gap-space-lg">
+<div class="flex flex-col gap-1.5 max-w-3xl">
+<div class="flex flex-wrap items-center gap-2 mb-1">
+<span class="px-2 py-0.5 rounded-full bg-primary-fixed text-on-primary-fixed font-label-code text-label-code tracking-wider uppercase font-semibold">Brand Governance Engine</span>
+<span class="px-2 py-0.5 rounded-full bg-surface-container-high text-on-surface-variant font-label-code text-label-code flex items-center gap-1.5">
+<span class="w-1.5 h-1.5 rounded-full bg-[#10b981]"></span>
+            Vector Synced: NovaFit-v2.8
+          </span>
+<span class="px-2 py-0.5 rounded-full bg-surface-container-highest text-primary font-label-meta text-label-meta tracking-wider uppercase">Demo Configuration</span>
+</div>
+<h1 class="font-headline-lg text-headline-lg text-on-surface tracking-tight">Brand Guidelines</h1>
+<p class="font-body-md text-body-md text-on-surface-variant">
+          Define, configure, and inspect the foundational guardrails that keep <strong class="text-on-surface font-semibold">NovaFit</strong> consistent, legally compliant, and on-tone across all digital marketing touchpoints.
+        </p>
+<div class="flex flex-wrap items-center gap-space-md mt-2 pt-2 text-on-surface-variant">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-secondary text-[18px]">tune</span>
+<span class="font-body-sm text-body-sm"><span class="text-on-surface-variant">Target Entity:</span> <strong class="text-on-surface font-semibold">NovaFit (Fitness & Wellness)</strong></span>
+</div>
+<span class="w-1 h-1 rounded-full bg-outline-variant"></span>
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-[18px]">record_voice_over</span>
+<span class="font-body-sm text-body-sm"><span class="text-on-surface-variant">Voice Persona:</span> <span class="px-2 py-0.5 rounded bg-surface-container-low text-primary font-medium font-body-sm">Encouraging, Realistic, Inclusive</span></span>
+</div>
+<span class="w-1 h-1 rounded-full bg-outline-variant"></span>
+<div class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-on-surface-variant text-[16px]">history</span>
+<span class="font-label-meta text-label-meta text-on-surface-variant uppercase tracking-wider">Indexed 12 mins ago</span>
+</div>
+</div>
+</div>
+<!-- Action Cluster -->
+<div class="flex flex-wrap items-center gap-space-sm self-start xl:self-center">
+<button class="flex items-center gap-2 px-space-md py-2.5 rounded-lg bg-surface-container-low hover:bg-surface-container text-on-surface font-body-sm text-body-sm font-semibold transition-all shadow-sm" id="importModalTrigger">
+<span class="material-symbols-outlined text-[18px] text-secondary">upload_file</span>
+<span>Import PDF / Markdown</span>
+</button>
+<button class="flex items-center gap-2 px-space-md py-2.5 rounded-lg bg-surface-container-low hover:bg-surface-container text-on-surface font-body-sm text-body-sm font-semibold transition-all shadow-sm">
+<span class="material-symbols-outlined text-[18px] text-tertiary">download</span>
+<span>Export Ruleset</span>
+</button>
+<button class="flex items-center gap-2 px-space-lg py-2.5 rounded-lg bg-primary-container text-on-primary font-body-sm text-body-sm font-semibold shadow-md hover:bg-secondary-container transition-all hover:scale-[1.01]">
+<span class="material-symbols-outlined text-[18px]">add_circle</span>
+<span>Add New Rule</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Interactive RAG Rapid Ingestion Drawer Banner -->
+<div class="relative overflow-hidden rounded-2xl bg-surface-container-lowest p-space-lg mb-space-lg shadow-sm">
+<div class="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-space-md">
+<div class="flex items-center gap-space-md min-w-0">
+<div class="w-12 h-12 rounded-xl bg-primary-fixed flex items-center justify-center flex-shrink-0 text-primary">
+<span class="material-symbols-outlined text-[26px]">smart_toy</span>
+</div>
+<div class="flex flex-col min-w-0">
+<div class="flex items-center gap-2 flex-wrap">
+<h3 class="font-headline-sm text-headline-sm text-on-surface">Automated RAG Guideline Extraction</h3>
+<span class="px-2 py-0.5 rounded-full bg-secondary-fixed text-on-secondary-fixed-variant font-label-code text-label-code font-semibold">Gemini 1.5 Pro Extractor</span>
+<span class="px-2 py-0.5 rounded-full bg-surface-container-high text-on-surface-variant font-label-meta text-[10px] uppercase tracking-wide">OCR Enabled</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant truncate mt-0.5">
+            Drop fresh Brand PDF books or style sheets to semantically tokenize prohibited claims, mandatory legal copy, and brand voice guidelines.
+          </p>
+</div>
+</div>
+<!-- Telemetry Status Pill & Action -->
+<div class="flex items-center gap-space-sm flex-shrink-0 w-full lg:w-auto justify-between lg:justify-end">
+<div class="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-surface-container-low text-on-surface">
+<span class="material-symbols-outlined text-[#10b981] text-[18px]">verified</span>
+<span class="font-body-sm text-body-sm text-on-surface font-medium truncate max-w-xs">
+            Extracted <span class="text-primary font-semibold">8 rules</span> from <span class="font-label-code text-label-code font-semibold">NovaFit_Compliance_Manual_2025.pdf</span>
+</span>
+</div>
+<button class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-surface-container hover:bg-surface-container-high text-on-surface font-body-sm text-body-sm font-semibold transition-colors">
+<span class="material-symbols-outlined text-[16px]">visibility</span>
+<span>Inspect Log</span>
+</button>
+</div>
+</div>
+<!-- Quick Dropzone Strip -->
+<div class="mt-space-md p-space-md rounded-xl bg-surface-container-low/70 flex flex-col md:flex-row items-center justify-between gap-space-md">
+<div class="flex items-center gap-space-md">
+<div class="w-10 h-10 rounded-lg bg-surface-container-lowest flex items-center justify-center text-primary shadow-sm">
+<span class="material-symbols-outlined text-[20px]">cloud_upload</span>
+</div>
+<div>
+<p class="font-body-sm text-body-sm font-semibold text-on-surface">Drag & drop brand deck, legal mandate PDF, or markdown repo</p>
+<p class="font-label-meta text-label-meta text-on-surface-variant uppercase tracking-wider">Supports PDF, DOCX, MD up to 45MB • Auto-chunks into Vector Embeddings</p>
+</div>
+</div>
+<div class="flex items-center gap-2">
+<button class="px-space-md py-1.5 rounded-lg bg-surface-container-lowest hover:bg-surface-container-high text-on-surface text-body-sm font-semibold transition-colors shadow-sm">
+          Browse Files
+        </button>
+<span class="font-label-code text-[11px] text-on-surface-variant">or</span>
+<button class="px-space-md py-1.5 rounded-lg bg-surface-container-lowest hover:bg-surface-container-high text-primary text-body-sm font-semibold transition-colors shadow-sm flex items-center gap-1">
+<span class="material-symbols-outlined text-[16px]">link</span>
+          Connect Notion
+        </button>
+</div>
+</div>
+</div>
+<!-- Category Filter Tabs -->
+<div class="flex items-center justify-between overflow-x-auto pb-2 mb-space-md gap-2 border-b-0">
+<div class="flex items-center gap-2 p-1 rounded-xl bg-surface-container-low">
+<button class="flex items-center gap-2 px-3.5 py-1.5 rounded-lg bg-surface-container-lowest text-on-surface shadow-sm font-body-sm text-body-sm font-semibold transition-all">
+<span>All Rules</span>
+<span class="px-1.5 py-0.2 rounded-full bg-primary-container text-on-primary font-label-code text-[10px]">24</span>
+</button>
+<button class="flex items-center gap-2 px-3 py-1.5 rounded-lg text-on-surface-variant hover:text-on-surface hover:bg-surface-container transition-all font-body-sm text-body-sm">
+<span>Brand Voice</span>
+<span class="px-1.5 py-0.2 rounded-full bg-surface-container-high text-on-surface font-label-code text-[10px]">6</span>
+</button>
+<button class="flex items-center gap-2 px-3 py-1.5 rounded-lg text-on-surface-variant hover:text-on-surface hover:bg-surface-container transition-all font-body-sm text-body-sm">
+<span>Marketing Claims</span>
+<span class="px-1.5 py-0.2 rounded-full bg-surface-container-high text-on-surface font-label-code text-[10px]">7</span>
+</button>
+<button class="flex items-center gap-2 px-3 py-1.5 rounded-lg text-on-surface-variant hover:text-on-surface hover:bg-surface-container transition-all font-body-sm text-body-sm">
+<span>Approved & Prohibited Phrases</span>
+<span class="px-1.5 py-0.2 rounded-full bg-surface-container-high text-on-surface font-label-code text-[10px]">5</span>
+</button>
+<button class="flex items-center gap-2 px-3 py-1.5 rounded-lg text-on-surface-variant hover:text-on-surface hover:bg-surface-container transition-all font-body-sm text-body-sm">
+<span>Required Disclaimers</span>
+<span class="px-1.5 py-0.2 rounded-full bg-surface-container-high text-on-surface font-label-code text-[10px]">4</span>
+</button>
+<button class="flex items-center gap-2 px-3 py-1.5 rounded-lg text-on-surface-variant hover:text-on-surface hover:bg-surface-container transition-all font-body-sm text-body-sm">
+<span>Terminology</span>
+<span class="px-1.5 py-0.2 rounded-full bg-surface-container-high text-on-surface font-label-code text-[10px]">2</span>
+</button>
+</div>
+<!-- Quick Stats Telemetry Spark -->
+<div class="hidden xl:flex items-center gap-space-md px-3 py-1.5 rounded-xl bg-surface-container-lowest shadow-sm">
+<div class="flex items-center gap-2">
+<span class="w-2.5 h-2.5 rounded-full bg-error"></span>
+<span class="font-label-meta text-label-meta text-on-surface-variant">5 Critical</span>
+</div>
+<div class="flex items-center gap-2">
+<span class="w-2.5 h-2.5 rounded-full bg-[#f59e0b]"></span>
+<span class="font-label-meta text-label-meta text-on-surface-variant">12 Medium</span>
+</div>
+<div class="flex items-center gap-2">
+<span class="w-2.5 h-2.5 rounded-full bg-[#10b981]"></span>
+<span class="font-label-meta text-label-meta text-on-surface-variant">7 Guideline</span>
+</div>
+</div>
+</div>
+<!-- Search, Severity, Origin, and Status Control Bar -->
+<div class="p-space-md rounded-2xl bg-surface-container-lowest shadow-sm mb-space-lg flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-space-md">
+<!-- Search Bar -->
+<div class="relative flex-1 min-w-[280px]">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant text-[20px]">search</span>
+<input class="w-full pl-10 pr-4 py-2 rounded-xl bg-surface-container-low text-on-surface placeholder:text-on-surface-variant font-body-md text-body-md outline-none focus:bg-surface-container focus:ring-2 focus:ring-primary/20 transition-all" placeholder="Search rules by keyword, Rule ID (e.g. BG-001), or excerpt..." type="text"/>
+</div>
+<!-- Filters Group -->
+<div class="flex flex-wrap items-center gap-2">
+<!-- Severity Filter -->
+<div class="relative">
+<select class="appearance-none pl-3 pr-8 py-2 rounded-xl bg-surface-container-low text-on-surface font-body-sm text-body-sm font-semibold outline-none hover:bg-surface-container transition-colors cursor-pointer">
+<option>All Severities (Any)</option>
+<option>High Severity (Red)</option>
+<option>Medium Severity (Amber)</option>
+<option>Low / Guideline (Green)</option>
+</select>
+<span class="material-symbols-outlined absolute right-2.5 top-1/2 -translate-y-1/2 text-on-surface-variant text-[16px] pointer-events-none">expand_more</span>
+</div>
+<!-- Origin Filter -->
+<div class="relative">
+<select class="appearance-none pl-3 pr-8 py-2 rounded-xl bg-surface-container-low text-on-surface font-body-sm text-body-sm font-semibold outline-none hover:bg-surface-container transition-colors cursor-pointer">
+<option>All Sources (Combined)</option>
+<option>Extracted via RAG PDF</option>
+<option>Manually Configured Policy</option>
+<option>Synced Legal Template</option>
+</select>
+<span class="material-symbols-outlined absolute right-2.5 top-1/2 -translate-y-1/2 text-on-surface-variant text-[16px] pointer-events-none">expand_more</span>
+</div>
+<!-- Status Toggle Pills -->
+<div class="flex items-center p-1 rounded-xl bg-surface-container-low">
+<button class="px-2.5 py-1 rounded-lg bg-surface-container-lowest text-on-surface font-body-sm text-body-sm font-semibold shadow-xs">Active (22)</button>
+<button class="px-2.5 py-1 rounded-lg text-on-surface-variant hover:text-on-surface font-body-sm text-body-sm">Draft (2)</button>
+<button class="px-2.5 py-1 rounded-lg text-on-surface-variant hover:text-on-surface font-body-sm text-body-sm">Archived (0)</button>
+</div>
+<!-- Table/Card layout toggle buttons -->
+<div class="hidden sm:flex items-center gap-1 p-1 rounded-xl bg-surface-container-low">
+<button class="p-1 rounded-lg bg-surface-container-lowest text-primary shadow-xs" title="Grid Layout">
+<span class="material-symbols-outlined text-[18px]">grid_view</span>
+</button>
+<button class="p-1 rounded-lg text-on-surface-variant hover:text-on-surface" title="Compact List">
+<span class="material-symbols-outlined text-[18px]">view_agenda</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Main Content: Structured Rule Cards Grid (Asymmetric Bespoke 2-Col Layout) -->
+<div class="grid grid-cols-1 xl:grid-cols-2 gap-space-lg">
+<!-- RULE CARD 1: BG-001 (Marketing Claim Policies) -->
+<div class="relative flex flex-col rounded-2xl bg-surface-container-lowest p-space-lg shadow-sm hover:shadow-md transition-shadow group">
+<!-- Left Edge Severity Pillar -->
+<div class="absolute left-0 top-6 bottom-6 w-1 rounded-r bg-error"></div>
+<!-- Card Header Strip -->
+<div class="flex items-start justify-between gap-space-md mb-space-md pl-2">
+<div class="flex flex-wrap items-center gap-2">
+<span class="px-2 py-0.5 rounded font-label-code text-label-code font-bold bg-surface-container-low text-on-surface tracking-wider">BG-001</span>
+<span class="px-2.5 py-0.5 rounded-full bg-error-container text-on-error-container font-label-meta text-label-meta uppercase tracking-wider font-semibold flex items-center gap-1">
+<span class="w-1.5 h-1.5 rounded-full bg-error"></span>
+            High Severity
+          </span>
+<span class="px-2 py-0.5 rounded bg-surface-container text-on-surface-variant font-label-meta text-label-meta uppercase tracking-wider">
+            Marketing Claim Policies
+          </span>
+</div>
+<!-- Card Quick Controls -->
+<div class="flex items-center gap-1">
+<!-- Toggle Active Checkbox -->
+<label class="relative inline-flex items-center cursor-pointer mr-1">
+<input checked="" class="sr-only peer" type="checkbox"/>
+<div class="w-9 h-5 bg-surface-container-highest peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-surface-container-lowest after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-surface-container-lowest after:border-surface-container-high after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-primary"></div>
+</label>
+<button class="p-1.5 rounded-lg text-on-surface-variant hover:text-on-surface hover:bg-surface-container transition-colors" title="Edit Rule">
+<span class="material-symbols-outlined text-[18px]">edit</span>
+</button>
+<button class="p-1.5 rounded-lg text-on-surface-variant hover:text-on-surface hover:bg-surface-container transition-colors" title="Duplicate">
+<span class="material-symbols-outlined text-[18px]">content_copy</span>
+</button>
+</div>
+</div>
+<!-- Main Rule Statement -->
+<div class="pl-2 mb-space-md">
+<h2 class="font-headline-sm text-headline-sm text-on-surface leading-snug">
+          “Never promise guaranteed results under any circumstance. Fitness adaptations are individual and non-linear.”
+        </h2>
+<!-- Source Citation Badge -->
+<div class="mt-2.5 flex items-center gap-2 p-2 rounded-xl bg-surface-container-low text-on-surface-variant">
+<span class="material-symbols-outlined text-[16px] text-primary">menu_book</span>
+<span class="font-body-sm text-body-sm truncate">
+            Extracted from <strong class="text-on-surface font-semibold">NovaFit_Compliance_Manual_2025.pdf</strong> (Page 14)
+          </span>
+<button class="ml-auto text-primary font-body-sm text-[12px] font-semibold hover:underline flex items-center gap-0.5 flex-shrink-0">
+<span>View Citation</span>
+<span class="material-symbols-outlined text-[14px]">arrow_outward</span>
+</button>
+</div>
+</div>
+<!-- Visual Examples & Pattern Taxonomy -->
+<div class="pl-2 grid grid-cols-1 md:grid-cols-2 gap-3 mb-space-md">
+<!-- Prohibited Expressions -->
+<div class="p-3 rounded-xl bg-error-container/30">
+<div class="flex items-center gap-1.5 text-error font-label-meta text-label-meta uppercase tracking-wider font-semibold mb-2">
+<span class="material-symbols-outlined text-[15px]">block</span>
+<span>Prohibited Patterns</span>
+</div>
+<div class="flex flex-wrap gap-1.5">
+<span class="px-2 py-1 rounded bg-surface-container-lowest text-error font-label-code text-[11px] line-through decoration-error/50 font-medium">"guaranteed results"</span>
+<span class="px-2 py-1 rounded bg-surface-container-lowest text-error font-label-code text-[11px] line-through decoration-error/50 font-medium">"guaranteed weight loss"</span>
+<span class="px-2 py-1 rounded bg-surface-container-lowest text-error font-label-code text-[11px] line-through decoration-error/50 font-medium">"100% foolproof"</span>
+</div>
+</div>
+<!-- Approved Substitutions -->
+<div class="p-3 rounded-xl bg-surface-container-low">
+<div class="flex items-center gap-1.5 text-[#10b981] font-label-meta text-label-meta uppercase tracking-wider font-semibold mb-2">
+<span class="material-symbols-outlined text-[15px]">check_circle</span>
+<span>Approved Alternatives</span>
+</div>
+<div class="flex flex-wrap gap-1.5">
+<span class="px-2 py-1 rounded bg-surface-container-lowest text-on-surface font-label-code text-[11px] font-medium">"sustainable progress"</span>
+<span class="px-2 py-1 rounded bg-surface-container-lowest text-on-surface font-label-code text-[11px] font-medium">"proven methodology"</span>
+<span class="px-2 py-1 rounded bg-surface-container-lowest text-on-surface font-label-code text-[11px] font-medium">"consistent habits"</span>
+</div>
+</div>
+</div>
+<!-- Active Channel Badges & Footer Metadata -->
+<div class="mt-auto pl-2 pt-space-sm flex flex-wrap items-center justify-between gap-space-sm border-t-0">
+<div class="flex items-center gap-1.5 flex-wrap">
+<span class="font-label-meta text-[10px] uppercase text-on-surface-variant font-semibold">Enforced In:</span>
+<span class="px-2 py-0.5 rounded bg-surface-container text-on-surface font-label-meta text-[11px]">Social Media</span>
+<span class="px-2 py-0.5 rounded bg-surface-container text-on-surface font-label-meta text-[11px]">Paid Ads</span>
+<span class="px-2 py-0.5 rounded bg-surface-container text-on-surface font-label-meta text-[11px]">Emails</span>
+<span class="px-2 py-0.5 rounded bg-surface-container text-on-surface font-label-meta text-[11px]">Landing Pages</span>
+</div>
+<div class="flex items-center gap-2">
+<span class="w-1.5 h-1.5 rounded-full bg-[#10b981]"></span>
+<span class="font-label-meta text-label-meta text-on-surface-variant uppercase">340 Scans Clean</span>
+</div>
+</div>
+</div>
+<!-- RULE CARD 2: BG-002 (Brand Voice & Realism) -->
+<div class="relative flex flex-col rounded-2xl bg-surface-container-lowest p-space-lg shadow-sm hover:shadow-md transition-shadow group">
+<!-- Left Edge Severity Pillar (Amber) -->
+<div class="absolute left-0 top-6 bottom-6 w-1 rounded-r bg-[#f59e0b]"></div>
+<!-- Card Header Strip -->
+<div class="flex items-start justify-between gap-space-md mb-space-md pl-2">
+<div class="flex flex-wrap items-center gap-2">
+<span class="px-2 py-0.5 rounded font-label-code text-label-code font-bold bg-surface-container-low text-on-surface tracking-wider">BG-002</span>
+<span class="px-2.5 py-0.5 rounded-full bg-surface-container-high text-[#b45309] font-label-meta text-label-meta uppercase tracking-wider font-semibold flex items-center gap-1">
+<span class="w-1.5 h-1.5 rounded-full bg-[#f59e0b]"></span>
+            Medium Severity
+          </span>
+<span class="px-2 py-0.5 rounded bg-surface-container text-on-surface-variant font-label-meta text-label-meta uppercase tracking-wider">
+            Brand Voice & Realism
+          </span>
+</div>
+<div class="flex items-center gap-1">
+<label class="relative inline-flex items-center cursor-pointer mr-1">
+<input checked="" class="sr-only peer" type="checkbox"/>
+<div class="w-9 h-5 bg-surface-container-highest peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-surface-container-lowest after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-surface-container-lowest after:border-surface-container-high after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-primary"></div>
+</label>
+<button class="p-1.5 rounded-lg text-on-surface-variant hover:text-on-surface hover:bg-surface-container transition-colors">
+<span class="material-symbols-outlined text-[18px]">edit</span>
+</button>
+<button class="p-1.5 rounded-lg text-on-surface-variant hover:text-on-surface hover:bg-surface-container transition-colors">
+<span class="material-symbols-outlined text-[18px]">content_copy</span>
+</button>
+</div>
+</div>
+<!-- Main Rule Statement -->
+<div class="pl-2 mb-space-md">
+<h2 class="font-headline-sm text-headline-sm text-on-surface leading-snug">
+          “Use encouraging language without unrealistic promises. Avoid hyperbolic generalizations like 'works for everyone'.”
+        </h2>
+<div class="mt-2.5 flex items-center gap-2 p-2 rounded-xl bg-surface-container-low text-on-surface-variant">
+<span class="material-symbols-outlined text-[16px] text-primary">auto_stories</span>
+<span class="font-body-sm text-body-sm truncate">
+            Extracted from <strong class="text-on-surface font-semibold">NovaFit_Voice_Tone_Guide.pdf</strong> (Page 8)
+          </span>
+<button class="ml-auto text-primary font-body-sm text-[12px] font-semibold hover:underline flex items-center gap-0.5 flex-shrink-0">
+<span>View Citation</span>
+<span class="material-symbols-outlined text-[14px]">arrow_outward</span>
+</button>
+</div>
+</div>
+<!-- Flagged vs Approved Patterns -->
+<div class="pl-2 grid grid-cols-1 md:grid-cols-2 gap-3 mb-space-md">
+<div class="p-3 rounded-xl bg-surface-container-low">
+<div class="flex items-center gap-1.5 text-[#b45309] font-label-meta text-label-meta uppercase tracking-wider font-semibold mb-2">
+<span class="material-symbols-outlined text-[15px]">flag</span>
+<span>Flagged Hyperboles</span>
+</div>
+<div class="flex flex-wrap gap-1.5">
+<span class="px-2 py-1 rounded bg-surface-container-lowest text-on-surface font-label-code text-[11px] font-medium">"works for everyone"</span>
+<span class="px-2 py-1 rounded bg-surface-container-lowest text-on-surface font-label-code text-[11px] font-medium">"effortless transformation"</span>
+<span class="px-2 py-1 rounded bg-surface-container-lowest text-on-surface font-label-code text-[11px] font-medium">"instant fitness"</span>
+</div>
+</div>
+<div class="p-3 rounded-xl bg-surface-container-low">
+<div class="flex items-center gap-1.5 text-primary font-label-meta text-label-meta uppercase tracking-wider font-semibold mb-2">
+<span class="material-symbols-outlined text-[15px]">tips_and_updates</span>
+<span>Suggested Tone Replacements</span>
+</div>
+<div class="flex flex-wrap gap-1.5">
+<span class="px-2 py-1 rounded bg-surface-container-lowest text-on-surface font-label-code text-[11px] font-medium">"adaptable for all fitness journeys"</span>
+<span class="px-2 py-1 rounded bg-surface-container-lowest text-on-surface font-label-code text-[11px] font-medium">"meet your personal goals"</span>
+</div>
+</div>
+</div>
+<!-- Active Channel Badges & Footer Metadata -->
+<div class="mt-auto pl-2 pt-space-sm flex flex-wrap items-center justify-between gap-space-sm">
+<div class="flex items-center gap-1.5 flex-wrap">
+<span class="font-label-meta text-[10px] uppercase text-on-surface-variant font-semibold">Enforced In:</span>
+<span class="px-2 py-0.5 rounded bg-surface-container text-on-surface font-label-meta text-[11px]">Blog Posts</span>
+<span class="px-2 py-0.5 rounded bg-surface-container text-on-surface font-label-meta text-[11px]">Video Captions</span>
+<span class="px-2 py-0.5 rounded bg-surface-container text-on-surface font-label-meta text-[11px]">Newsletters</span>
+</div>
+<div class="flex items-center gap-2">
+<span class="w-1.5 h-1.5 rounded-full bg-[#f59e0b]"></span>
+<span class="font-label-meta text-label-meta text-on-surface-variant uppercase">14 Soft Warns</span>
+</div>
+</div>
+</div>
+<!-- RULE CARD 3: BG-003 (Required Disclaimers) -->
+<div class="relative flex flex-col rounded-2xl bg-surface-container-lowest p-space-lg shadow-sm hover:shadow-md transition-shadow group">
+<!-- Left Edge Severity Pillar -->
+<div class="absolute left-0 top-6 bottom-6 w-1 rounded-r bg-[#f59e0b]"></div>
+<div class="flex items-start justify-between gap-space-md mb-space-md pl-2">
+<div class="flex flex-wrap items-center gap-2">
+<span class="px-2 py-0.5 rounded font-label-code text-label-code font-bold bg-surface-container-low text-on-surface tracking-wider">BG-003</span>
+<span class="px-2.5 py-0.5 rounded-full bg-surface-container-high text-[#b45309] font-label-meta text-label-meta uppercase tracking-wider font-semibold flex items-center gap-1">
+<span class="w-1.5 h-1.5 rounded-full bg-[#f59e0b]"></span>
+            Medium Severity
+          </span>
+<span class="px-2 py-0.5 rounded bg-surface-container text-on-surface-variant font-label-meta text-label-meta uppercase tracking-wider">
+            Required Disclaimers
+          </span>
+</div>
+<div class="flex items-center gap-1">
+<label class="relative inline-flex items-center cursor-pointer mr-1">
+<input checked="" class="sr-only peer" type="checkbox"/>
+<div class="w-9 h-5 bg-surface-container-highest peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-surface-container-lowest after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-surface-container-lowest after:border-surface-container-high after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-primary"></div>
+</label>
+<button class="p-1.5 rounded-lg text-on-surface-variant hover:text-on-surface hover:bg-surface-container transition-colors">
+<span class="material-symbols-outlined text-[18px]">edit</span>
+</button>
+<button class="p-1.5 rounded-lg text-on-surface-variant hover:text-on-surface hover:bg-surface-container transition-colors">
+<span class="material-symbols-outlined text-[18px]">content_copy</span>
+</button>
+</div>
+</div>
+<!-- Main Rule Statement -->
+<div class="pl-2 mb-space-md">
+<h2 class="font-headline-sm text-headline-sm text-on-surface leading-snug">
+          “Include 'Results vary by individual' wherever any personal transformation, routine, or timeline is stated in marketing messages.”
+        </h2>
+<div class="mt-2.5 flex items-center gap-2 p-2 rounded-xl bg-surface-container-low text-on-surface-variant">
+<span class="material-symbols-outlined text-[16px] text-secondary">gavel</span>
+<span class="font-body-sm text-body-sm truncate">
+            Origin: <strong class="text-on-surface font-semibold">Manually Configured Policy</strong> (Legal Mandate v3)
+          </span>
+<span class="ml-auto px-2 py-0.5 rounded bg-secondary-fixed text-on-secondary-fixed-variant font-label-meta text-[10px] font-semibold uppercase">Mandatory Footer</span>
+</div>
+</div>
+<!-- Mandatory Disclaimer Copy Highlight Box -->
+<div class="pl-2 mb-space-md">
+<div class="p-3.5 rounded-xl bg-surface-container-low flex flex-col gap-2">
+<div class="flex items-center justify-between">
+<span class="font-label-meta text-label-meta uppercase tracking-wider text-primary font-semibold flex items-center gap-1">
+<span class="material-symbols-outlined text-[16px]">verified_user</span>
+              Mandatory Legal Copy
+            </span>
+<button class="text-primary font-body-sm text-[12px] font-semibold hover:underline flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]">content_copy</span>
+              Copy Snippet
+            </button>
+</div>
+<div class="p-3 rounded-lg bg-surface-container-lowest text-on-surface font-label-code text-body-sm border-l-4 border-primary">
+            “Results vary by individual.”
+          </div>
+<p class="font-body-sm text-body-sm text-on-surface-variant">
+            Placement requirement: Minimum 9pt font or visible for at least 3 consecutive seconds in video content.
+          </p>
+</div>
+</div>
+<!-- Active Channel Badges & Footer Metadata -->
+<div class="mt-auto pl-2 pt-space-sm flex flex-wrap items-center justify-between gap-space-sm">
+<div class="flex items-center gap-1.5 flex-wrap">
+<span class="font-label-meta text-[10px] uppercase text-on-surface-variant font-semibold">Enforced In:</span>
+<span class="px-2 py-0.5 rounded bg-surface-container text-on-surface font-label-meta text-[11px]">Testimonials</span>
+<span class="px-2 py-0.5 rounded bg-surface-container text-on-surface font-label-meta text-[11px]">Paid Reels</span>
+<span class="px-2 py-0.5 rounded bg-surface-container text-on-surface font-label-meta text-[11px]">Meta Carousels</span>
+</div>
+<div class="flex items-center gap-2">
+<span class="w-1.5 h-1.5 rounded-full bg-[#10b981]"></span>
+<span class="font-label-meta text-label-meta text-on-surface-variant uppercase">Automated Append Ready</span>
+</div>
+</div>
+</div>
+<!-- RULE CARD 4: BG-004 (Approved Phrases) -->
+<div class="relative flex flex-col rounded-2xl bg-surface-container-lowest p-space-lg shadow-sm hover:shadow-md transition-shadow group">
+<!-- Left Edge Severity Pillar (Green) -->
+<div class="absolute left-0 top-6 bottom-6 w-1 rounded-r bg-[#10b981]"></div>
+<div class="flex items-start justify-between gap-space-md mb-space-md pl-2">
+<div class="flex flex-wrap items-center gap-2">
+<span class="px-2 py-0.5 rounded font-label-code text-label-code font-bold bg-surface-container-low text-on-surface tracking-wider">BG-004</span>
+<span class="px-2.5 py-0.5 rounded-full bg-surface-container-high text-[#047857] font-label-meta text-label-meta uppercase tracking-wider font-semibold flex items-center gap-1">
+<span class="w-1.5 h-1.5 rounded-full bg-[#10b981]"></span>
+            Low / Guideline
+          </span>
+<span class="px-2 py-0.5 rounded bg-surface-container text-on-surface-variant font-label-meta text-label-meta uppercase tracking-wider">
+            Approved Phrases
+          </span>
+</div>
+<div class="flex items-center gap-1">
+<label class="relative inline-flex items-center cursor-pointer mr-1">
+<input checked="" class="sr-only peer" type="checkbox"/>
+<div class="w-9 h-5 bg-surface-container-highest peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-surface-container-lowest after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-surface-container-lowest after:border-surface-container-high after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-primary"></div>
+</label>
+<button class="p-1.5 rounded-lg text-on-surface-variant hover:text-on-surface hover:bg-surface-container transition-colors">
+<span class="material-symbols-outlined text-[18px]">edit</span>
+</button>
+<button class="p-1.5 rounded-lg text-on-surface-variant hover:text-on-surface hover:bg-surface-container transition-colors">
+<span class="material-symbols-outlined text-[18px]">content_copy</span>
+</button>
+</div>
+</div>
+<!-- Main Rule Statement -->
+<div class="pl-2 mb-space-md">
+<h2 class="font-headline-sm text-headline-sm text-on-surface leading-snug">
+          “Reinforce community empowerment with approved slogans: 'Progress Over Perfection', 'Your Pace, Your Power'.”
+        </h2>
+<div class="mt-2.5 flex items-center gap-2 p-2 rounded-xl bg-surface-container-low text-on-surface-variant">
+<span class="material-symbols-outlined text-[16px] text-primary">collections_bookmark</span>
+<span class="font-body-sm text-body-sm truncate">
+            Extracted from <strong class="text-on-surface font-semibold">NovaFit_Brand_Deck.pdf</strong> (Page 2)
+          </span>
+<button class="ml-auto text-primary font-body-sm text-[12px] font-semibold hover:underline flex items-center gap-0.5 flex-shrink-0">
+<span>View Citation</span>
+<span class="material-symbols-outlined text-[14px]">arrow_outward</span>
+</button>
+</div>
+</div>
+<!-- Approved Slogan Showcase -->
+<div class="pl-2 grid grid-cols-1 md:grid-cols-2 gap-3 mb-space-md">
+<div class="p-3 rounded-xl bg-surface-container-low flex flex-col justify-between">
+<span class="font-label-meta text-[10px] uppercase text-primary font-bold">Approved Tagline 01</span>
+<p class="font-headline-sm text-[16px] text-on-surface mt-1">“Progress Over Perfection”</p>
+<span class="font-label-meta text-[10px] text-on-surface-variant mt-2">Preferred for community stories</span>
+</div>
+<div class="p-3 rounded-xl bg-surface-container-low flex flex-col justify-between">
+<span class="font-label-meta text-[10px] uppercase text-secondary font-bold">Approved Tagline 02</span>
+<p class="font-headline-sm text-[16px] text-on-surface mt-1">“Your Pace, Your Power”</p>
+<span class="font-label-meta text-[10px] text-on-surface-variant mt-2">Preferred for athlete onboarding</span>
+</div>
+</div>
+<!-- Active Channel Badges & Footer Metadata -->
+<div class="mt-auto pl-2 pt-space-sm flex flex-wrap items-center justify-between gap-space-sm">
+<div class="flex items-center gap-1.5 flex-wrap">
+<span class="font-label-meta text-[10px] uppercase text-on-surface-variant font-semibold">Enforced In:</span>
+<span class="px-2 py-0.5 rounded bg-surface-container text-on-surface font-label-meta text-[11px]">Push Notifications</span>
+<span class="px-2 py-0.5 rounded bg-surface-container text-on-surface font-label-meta text-[11px]">Billboards</span>
+<span class="px-2 py-0.5 rounded bg-surface-container text-on-surface font-label-meta text-[11px]">Brand Collateral</span>
+</div>
+<div class="flex items-center gap-2">
+<span class="w-1.5 h-1.5 rounded-full bg-[#10b981]"></span>
+<span class="font-label-meta text-label-meta text-on-surface-variant uppercase">Positive Match Booster</span>
+</div>
+</div>
+</div>
+<!-- RULE CARD 5: BG-005 (Terminology & Trademark) -->
+<div class="relative flex flex-col rounded-2xl bg-surface-container-lowest p-space-lg shadow-sm hover:shadow-md transition-shadow group xl:col-span-2">
+<!-- Left Edge Severity Pillar -->
+<div class="absolute left-0 top-6 bottom-6 w-1 rounded-r bg-error"></div>
+<div class="flex items-start justify-between gap-space-md mb-space-md pl-2">
+<div class="flex flex-wrap items-center gap-2">
+<span class="px-2 py-0.5 rounded font-label-code text-label-code font-bold bg-surface-container-low text-on-surface tracking-wider">BG-005</span>
+<span class="px-2.5 py-0.5 rounded-full bg-error-container text-on-error-container font-label-meta text-label-meta uppercase tracking-wider font-semibold flex items-center gap-1">
+<span class="w-1.5 h-1.5 rounded-full bg-error"></span>
+            High Severity
+          </span>
+<span class="px-2 py-0.5 rounded bg-surface-container text-on-surface-variant font-label-meta text-label-meta uppercase tracking-wider">
+            Terminology & Trademark Protection
+          </span>
+<span class="px-2 py-0.5 rounded-full bg-secondary-fixed text-on-secondary-fixed-variant font-label-meta text-[10px] font-semibold uppercase">Global Regex Active</span>
+</div>
+<div class="flex items-center gap-1">
+<label class="relative inline-flex items-center cursor-pointer mr-1">
+<input checked="" class="sr-only peer" type="checkbox"/>
+<div class="w-9 h-5 bg-surface-container-highest peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-surface-container-lowest after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-surface-container-lowest after:border-surface-container-high after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-primary"></div>
+</label>
+<button class="p-1.5 rounded-lg text-on-surface-variant hover:text-on-surface hover:bg-surface-container transition-colors">
+<span class="material-symbols-outlined text-[18px]">edit</span>
+</button>
+<button class="p-1.5 rounded-lg text-on-surface-variant hover:text-on-surface hover:bg-surface-container transition-colors">
+<span class="material-symbols-outlined text-[18px]">content_copy</span>
+</button>
+</div>
+</div>
+<!-- Main Rule Statement -->
+<div class="pl-2 mb-space-md">
+<h2 class="font-headline-sm text-headline-sm text-on-surface leading-snug">
+          “Always spell 'NovaFit' as a single CamelCase word with capital N and capital F. Never write 'Nova Fit' or 'novafit'.”
+        </h2>
+<div class="mt-2.5 flex items-center gap-2 p-2 rounded-xl bg-surface-container-low text-on-surface-variant max-w-2xl">
+<span class="material-symbols-outlined text-[16px] text-primary">verified</span>
+<span class="font-body-sm text-body-sm truncate">
+            Origin: <strong class="text-on-surface font-semibold">Manually Configured Policy</strong> • Trademark Registry Serial #9842109
+          </span>
+<button class="ml-auto text-primary font-body-sm text-[12px] font-semibold hover:underline flex items-center gap-0.5 flex-shrink-0">
+<span>Trademark Dossier</span>
+<span class="material-symbols-outlined text-[14px]">arrow_outward</span>
+</button>
+</div>
+</div>
+<!-- Visual Spelling Guide Split Table -->
+<div class="pl-2 grid grid-cols-1 md:grid-cols-3 gap-3 mb-space-md">
+<!-- Strict Match -->
+<div class="p-3.5 rounded-xl bg-surface-container-low">
+<div class="flex items-center gap-1.5 text-[#10b981] font-label-meta text-label-meta uppercase tracking-wider font-semibold mb-2">
+<span class="material-symbols-outlined text-[16px]">check_circle</span>
+<span>Mandatory Canonical Form</span>
+</div>
+<div class="p-2.5 rounded-lg bg-surface-container-lowest flex items-center justify-between">
+<span class="font-label-code text-body-lg font-bold text-on-surface">NovaFit</span>
+<span class="px-2 py-0.5 rounded bg-primary-fixed text-on-primary-fixed font-label-meta text-[10px] font-bold">OFFICIAL</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-2">
+            Single word. Capital 'N' and capital 'F'. Zero whitespace between syllables.
+          </p>
+</div>
+<!-- Prohibited 1 -->
+<div class="p-3.5 rounded-xl bg-error-container/30">
+<div class="flex items-center gap-1.5 text-error font-label-meta text-label-meta uppercase tracking-wider font-semibold mb-2">
+<span class="material-symbols-outlined text-[16px]">cancel</span>
+<span>Prohibited Space Separation</span>
+</div>
+<div class="p-2.5 rounded-lg bg-surface-container-lowest flex items-center justify-between">
+<span class="font-label-code text-body-lg font-semibold text-error line-through">Nova Fit</span>
+<span class="px-2 py-0.5 rounded bg-error-container text-on-error-container font-label-meta text-[10px]">REJECTED</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-2">
+            Dilutes registered wordmark status in press releases and affiliate links.
+          </p>
+</div>
+<!-- Prohibited 2 -->
+<div class="p-3.5 rounded-xl bg-error-container/30">
+<div class="flex items-center gap-1.5 text-error font-label-meta text-label-meta uppercase tracking-wider font-semibold mb-2">
+<span class="material-symbols-outlined text-[16px]">cancel</span>
+<span>Prohibited Lowercase</span>
+</div>
+<div class="p-2.5 rounded-lg bg-surface-container-lowest flex items-center justify-between">
+<span class="font-label-code text-body-lg font-semibold text-error line-through">novafit</span>
+<span class="px-2 py-0.5 rounded bg-error-container text-on-error-container font-label-meta text-[10px]">REJECTED</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-2">
+            Strictly disallowed except in web domain strings (e.g. novafit.com).
+          </p>
+</div>
+</div>
+<!-- Active Channel Badges & Footer Metadata -->
+<div class="mt-auto pl-2 pt-space-sm flex flex-wrap items-center justify-between gap-space-sm">
+<div class="flex items-center gap-1.5 flex-wrap">
+<span class="font-label-meta text-[10px] uppercase text-on-surface-variant font-semibold">Enforced In:</span>
+<span class="px-2 py-0.5 rounded bg-surface-container text-on-surface font-label-meta text-[11px]">All Marketing & Legal Touchpoints (Universal Guardrail)</span>
+</div>
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-[16px]">security</span>
+<span class="font-label-meta text-label-meta text-on-surface uppercase font-semibold">1,290 Automated Auto-Corrections Handled</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Ingestion Modal / Sliding Drawer Simulation (Accessible via Trigger) -->
+<div class="fixed inset-0 z-50 bg-inverse-surface/40 backdrop-blur-sm hidden items-center justify-center p-4" id="importModal">
+<div class="relative w-full max-w-xl rounded-2xl bg-surface-container-lowest shadow-2xl p-space-xl flex flex-col gap-space-md">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-2.5">
+<div class="w-10 h-10 rounded-xl bg-primary-fixed text-primary flex items-center justify-center">
+<span class="material-symbols-outlined text-[24px]">post_add</span>
+</div>
+<div>
+<h3 class="font-headline-sm text-headline-sm text-on-surface">Import Brand Guidelines</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant">RAG-powered PDF, DOCX, or Markdown document parser</p>
+</div>
+</div>
+<button class="p-1 rounded-lg text-on-surface-variant hover:text-on-surface hover:bg-surface-container transition-colors" id="importModalClose">
+<span class="material-symbols-outlined text-[20px]">close</span>
+</button>
+</div>
+<div class="p-6 rounded-xl bg-surface-container-low border-2 border-dashed border-outline-variant flex flex-col items-center justify-center text-center">
+<span class="material-symbols-outlined text-[40px] text-primary mb-2">upload_file</span>
+<p class="font-body-md text-body-md font-semibold text-on-surface">Drop your compliance guidelines or brand stylebook here</p>
+<p class="font-body-sm text-body-sm text-on-surface-variant max-w-sm mt-1">
+          BrandSentinel AI will chunk, semantically extract, and draft suggested guardrails for your review.
+        </p>
+<button class="mt-4 px-4 py-2 rounded-lg bg-primary-container text-on-primary font-body-sm text-body-sm font-semibold shadow-sm hover:bg-secondary-container transition-all">
+          Select Document from Device
+        </button>
+</div>
+<div class="flex flex-col gap-2">
+<span class="font-label-meta text-label-meta uppercase text-on-surface-variant font-semibold">Quick Demo Presets:</span>
+<div class="flex flex-col gap-1.5">
+<button class="w-full flex items-center justify-between p-2.5 rounded-lg bg-surface-container-low hover:bg-surface-container text-left transition-colors">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-secondary text-[18px]">description</span>
+<span class="font-body-sm text-body-sm font-semibold text-on-surface">NovaFit_Compliance_Manual_2025.pdf</span>
+</div>
+<span class="font-label-code text-[11px] text-primary">Reparse (8 Rules)</span>
+</button>
+<button class="w-full flex items-center justify-between p-2.5 rounded-lg bg-surface-container-low hover:bg-surface-container text-left transition-colors">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-secondary text-[18px]">description</span>
+<span class="font-body-sm text-body-sm font-semibold text-on-surface">NovaFit_Tone_Matrix_Q3.md</span>
+</div>
+<span class="font-label-code text-[11px] text-primary">Parse (4 Rules)</span>
+</button>
+</div>
+</div>
+<div class="flex items-center justify-end gap-2 pt-2">
+<button class="px-4 py-2 rounded-lg bg-surface-container text-on-surface font-body-sm text-body-sm font-semibold hover:bg-surface-container-high transition-colors" id="importModalCancel">
+          Cancel
+        </button>
+<button class="px-4 py-2 rounded-lg bg-primary-container text-on-primary font-body-sm text-body-sm font-semibold shadow-sm hover:bg-secondary-container transition-all">
+          Begin RAG Extraction
+        </button>
+</div>
+</div>
+</div>
+<!-- Inline Script for Micro-Interactions -->
+<script>
+    const modal = document.getElementById('importModal');
+    const trigger = document.getElementById('importModalTrigger');
+    const closeBtn = document.getElementById('importModalClose');
+    const cancelBtn = document.getElementById('importModalCancel');
+
+    if (trigger && modal) {
+      trigger.addEventListener('click', () => {
+        modal.classList.remove('hidden');
+        modal.classList.add('flex');
+      });
+    }
+
+    const closeModal = () => {
+      if (modal) {
+        modal.classList.add('hidden');
+        modal.classList.remove('flex');
+      }
+    };
+
+    if (closeBtn) closeBtn.addEventListener('click', closeModal);
+    if (cancelBtn) cancelBtn.addEventListener('click', closeModal);
+
+    if (modal) {
+      modal.addEventListener('click', (e) => {
+        if (e.target === modal) closeModal();
+      });
+    }
+  </script>
+</div></main></div></body></html>
