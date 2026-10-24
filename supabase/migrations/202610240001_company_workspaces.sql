@@ -16,12 +16,25 @@ create index if not exists company_memberships_user_idx on public.company_member
 alter table public.companies enable row level security;
 alter table public.company_memberships enable row level security;
 
+-- Avoid recursive RLS policies by keeping the membership lookup in a narrowly scoped helper.
+create or replace function public.is_company_member(target_company_id uuid)
+returns boolean
+language sql stable security definer set search_path = ''
+as $$
+  select exists (
+    select 1 from public.company_memberships m
+    where m.company_id = target_company_id and m.user_id = (select auth.uid())
+  );
+$$;
+revoke all on function public.is_company_member(uuid) from public;
+grant execute on function public.is_company_member(uuid) to authenticated;
+
 drop policy if exists "Members can view their companies" on public.companies;
 create policy "Members can view their companies" on public.companies for select to authenticated
-using (exists (select 1 from public.company_memberships m where m.company_id = companies.id and m.user_id = (select auth.uid())));
+using (public.is_company_member(id));
 drop policy if exists "Members can view memberships in their companies" on public.company_memberships;
 create policy "Members can view memberships in their companies" on public.company_memberships for select to authenticated
-using (user_id = (select auth.uid()) or exists (select 1 from public.company_memberships own where own.company_id = company_memberships.company_id and own.user_id = (select auth.uid())));
+using (user_id = (select auth.uid()) or public.is_company_member(company_id));
 
 create or replace function public.create_company_workspace(company_name text)
 returns table(id uuid, name text)
