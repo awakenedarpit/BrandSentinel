@@ -166,7 +166,7 @@ export const ContentAuditor: React.FC<ContentAuditorProps> = ({
                   <div className="flex items-center gap-2 min-w-0">
                     <span className="material-symbols-outlined text-secondary text-[18px]">verified</span>
                     <span className="font-body-md text-body-md font-semibold truncate">
-                      NovaFit — Fitness & Wellness
+                      Your brand workspace
                     </span>
                   </div>
                   <span className="material-symbols-outlined text-on-surface-variant text-[18px]">expand_more</span>
@@ -461,7 +461,7 @@ export const ContentAuditor: React.FC<ContentAuditorProps> = ({
                 </div>
                 <p className="font-headline-sm text-headline-sm text-on-surface">No Content Entered</p>
                 <p className="font-body-sm text-body-sm text-on-surface-variant max-w-sm">
-                  Enter or paste your promotional marketing draft in the editor above, or select Scenario A or Scenario B to load sample campaigns.
+                  Enter or paste your marketing draft above. Audits use the rules and documents associated with your signed-in account.
                 </p>
               </div>
             ) : findings.length === 0 ? (
@@ -471,7 +471,7 @@ export const ContentAuditor: React.FC<ContentAuditorProps> = ({
                 </div>
                 <p className="font-headline-sm text-headline-sm text-on-surface">All Policies Satisfied</p>
                 <p className="font-body-sm text-body-sm text-on-surface-variant max-w-sm">
-                  This copy matches all active NovaFit voice and legal rules. Ready to publish or export!
+                  This copy passed checks against your active brand rules. Review the findings before publishing.
                 </p>
               </div>
             ) : (
