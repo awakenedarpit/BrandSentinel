@@ -5,7 +5,7 @@ import {
   auditWithGeminiRAG,
   inMemoryDocumentStore,
   serverSupabase
-} from './ragEngine';
+} from './ragEngine.js';
 
 // Parse JSON request body helper with stream guard
 async function parseJsonBody(req: Connect.IncomingMessage): Promise<any> {
