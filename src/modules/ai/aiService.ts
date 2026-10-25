@@ -124,7 +124,16 @@ export async function ingestDocumentFile(file: File): Promise<{
           })
         });
 
-        const data = await res.json();
+        const responseText = await res.text();
+        let data: any;
+        try {
+          data = responseText ? JSON.parse(responseText) : {};
+        } catch {
+          const preview = responseText.replace(/\\s+/g, ' ').slice(0, 140);
+          throw new Error(
+            `Ingestion API returned non-JSON (HTTP ${res.status}). This usually means the server route is unavailable. Response: ${preview || '(empty response)'}`
+          );
+        }
         if (res.ok) {
           resolve({
             success: true,
