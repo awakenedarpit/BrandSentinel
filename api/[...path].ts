@@ -1,5 +1,5 @@
 import type { IncomingMessage, ServerResponse } from 'node:http';
-import { createRAGApiMiddleware } from '../server/apiMiddleware';
+import { createRAGApiMiddleware } from '../server/apiMiddleware.js';
 
 /**
  * Vercel serverless catch-all for the RAG API.
