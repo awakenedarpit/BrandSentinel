@@ -176,22 +176,11 @@ export async function extractTextFromDocument(
       runtimeGlobal.DOMMatrix ??= CanvasDOMMatrix;
       runtimeGlobal.ImageData ??= CanvasImageData;
       runtimeGlobal.Path2D ??= CanvasPath2D;
+      // pdf-parse v2 provides a worker helper specifically for Node/serverless
+      // deployments. Use its supported path instead of guessing pdfjs-dist paths.
+      const { getPath } = await import('pdf-parse/worker');
       const { PDFParse } = await import('pdf-parse');
-      const pdfParseEntry = nodeRequire.resolve('pdf-parse');
-      const workerCandidates = [
-        // pdf-parse v2 delegates PDF parsing to pdfjs-dist. In Vercel's
-        // bundled runtime the worker is commonly emitted under this path.
-        join(process.cwd(), 'node_modules/pdfjs-dist/legacy/build/pdf.worker.mjs'),
-        join(process.cwd(), 'node_modules/pdfjs-dist/build/pdf.worker.mjs'),
-        join(dirname(pdfParseEntry), 'pdf.worker.mjs'),
-        join(process.cwd(), 'node_modules/pdf-parse/dist/pdf-parse/cjs/pdf.worker.mjs'),
-        join(process.cwd(), 'node_modules/pdf-parse/dist/pdf-parse/esm/pdf.worker.mjs')
-      ];
-      const workerPath = workerCandidates.find(candidate => existsSync(candidate));
-      if (!workerPath) {
-        throw new Error('PDF.js worker file was not bundled with the server function.');
-      }
-      PDFParse.setWorker(pathToFileURL(workerPath).href);
+      PDFParse.setWorker(getPath());
       const parser = new PDFParse({ data: buffer });
       let textResult: Awaited<ReturnType<typeof parser.getText>>;
       try {
