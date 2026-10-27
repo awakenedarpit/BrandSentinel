@@ -705,7 +705,7 @@ export async function ingestDocument(params: {
     // Upsert extracted brand rules into brand_rules table
     if (extractedRules.length > 0) {
       const ruleInserts = extractedRules.map(r => ({
-        id: `${userId}-${r.id}`,
+        id: `${userId}-${id}-${r.id}`,
         brand_profile_id: brandProfileId,
         user_id: userId || null,
         title: r.title,
