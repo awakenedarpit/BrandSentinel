@@ -179,6 +179,10 @@ export async function extractTextFromDocument(
       const { PDFParse } = await import('pdf-parse');
       const pdfParseEntry = nodeRequire.resolve('pdf-parse');
       const workerCandidates = [
+        // pdf-parse v2 delegates PDF parsing to pdfjs-dist. In Vercel's
+        // bundled runtime the worker is commonly emitted under this path.
+        join(process.cwd(), 'node_modules/pdfjs-dist/legacy/build/pdf.worker.mjs'),
+        join(process.cwd(), 'node_modules/pdfjs-dist/build/pdf.worker.mjs'),
         join(dirname(pdfParseEntry), 'pdf.worker.mjs'),
         join(process.cwd(), 'node_modules/pdf-parse/dist/pdf-parse/cjs/pdf.worker.mjs'),
         join(process.cwd(), 'node_modules/pdf-parse/dist/pdf-parse/esm/pdf.worker.mjs')
