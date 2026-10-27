@@ -1,0 +1,8 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "functions": {
+    "api/*.ts": {
+      "includeFiles": "node_modules/pdf-parse/dist/pdf-parse/cjs/pdf.worker.mjs"
+    }
+  }
+}

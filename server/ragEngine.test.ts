@@ -6,6 +6,26 @@ import {
   retrieveRelevantChunks
 } from './ragEngine';
 
+function createOnePagePdf(text: string): Buffer {
+  const stream = `BT\n/F1 18 Tf\n72 720 Td\n(${text.replace(/[\\()]/g, '\\$&')}) Tj\nET\n`;
+  const objects = [
+    '<< /Type /Catalog /Pages 2 0 R >>',
+    '<< /Type /Pages /Kids [3 0 R] /Count 1 >>',
+    '<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 4 0 R >> >> /Contents 5 0 R >>',
+    '<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>',
+    `<< /Length ${Buffer.byteLength(stream)} >>\nstream\n${stream}endstream`
+  ];
+  let pdf = '%PDF-1.4\n';
+  const offsets: number[] = [];
+  for (let index = 0; index < objects.length; index++) {
+    offsets.push(Buffer.byteLength(pdf));
+    pdf += `${index + 1} 0 obj\n${objects[index]}\nendobj\n`;
+  }
+  const xrefOffset = Buffer.byteLength(pdf);
+  pdf += `xref\n0 6\n0000000000 65535 f \n${offsets.map(offset => `${String(offset).padStart(10, '0')} 00000 n \n`).join('')}trailer\n<< /Size 6 /Root 1 0 R >>\nstartxref\n${xrefOffset}\n%%EOF\n`;
+  return Buffer.from(pdf, 'ascii');
+}
+
 describe('RAG Pipeline Unit & Integration Tests', () => {
   describe('Text Chunking & Page Metadata Tracking', () => {
     it('splits text into overlapping chunks while preserving page numbers', () => {
@@ -45,6 +65,16 @@ describe('RAG Pipeline Unit & Integration Tests', () => {
       expect(pages.length).toBe(1);
       expect(pages[0].text).toContain('Never use guaranteed results.');
       expect(pages[0].pageNumber).toBe(1);
+    });
+
+    it('extracts text from a valid PDF using the configured serverless worker', async () => {
+      const pages = await extractTextFromDocument(
+        createOnePagePdf('BrandSentinel worker regression probe'),
+        'worker-probe.pdf',
+        'PDF'
+      );
+      expect(pages).toHaveLength(1);
+      expect(pages[0].text).toContain('BrandSentinel worker regression probe');
     });
   });
 

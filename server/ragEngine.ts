@@ -1,9 +1,14 @@
 import { GoogleGenAI } from '@google/genai';
+import { createRequire } from 'node:module';
+import { dirname, join } from 'node:path';
+import { pathToFileURL } from 'node:url';
 import { createClient, SupabaseClient } from '@supabase/supabase-js';
 import dotenv from 'dotenv';
 import { DOMMatrix as CanvasDOMMatrix, ImageData as CanvasImageData, Path2D as CanvasPath2D } from '@napi-rs/canvas';
 
 dotenv.config();
+
+const nodeRequire = createRequire(import.meta.url);
 
 // Secure Server-side credentials (read directly from process.env, never exposed to client)
 const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
@@ -171,9 +176,16 @@ export async function extractTextFromDocument(
       runtimeGlobal.ImageData ??= CanvasImageData;
       runtimeGlobal.Path2D ??= CanvasPath2D;
       const { PDFParse } = await import('pdf-parse');
+      const pdfParseEntry = nodeRequire.resolve('pdf-parse');
+      const workerPath = join(dirname(pdfParseEntry), 'pdf.worker.mjs');
+      PDFParse.setWorker(pathToFileURL(workerPath).href);
       const parser = new PDFParse({ data: buffer });
-      const textResult = await parser.getText();
-      await parser.destroy();
+      let textResult: Awaited<ReturnType<typeof parser.getText>>;
+      try {
+        textResult = await parser.getText();
+      } finally {
+        await parser.destroy();
+      }
 
       if (!textResult.pages || textResult.pages.length === 0) {
         throw new Error('Empty PDF document: no pages found.');
