@@ -13,7 +13,9 @@ import {
 const SAMPLE_PDF_PATH = '/Users/user/Downloads/sample_college_rules_and_regulations.pdf';
 const BRAND_PROFILE_ID = 'a1b2c3d4-e5f6-7a8b-9c0d-1e2f3a4b5c6d';
 
-describe('College Policy Rule Extraction & RAG Pipeline Regression Tests', () => {
+// Requires a private PDF at a developer-specific absolute path and a dedicated test backend.
+// Keep blocked until the fixture and isolated integration-test credentials are provisioned.
+describe.skip('College Policy Rule Extraction & RAG Pipeline Regression Tests', () => {
   let pdfBuffer: Buffer;
 
   beforeAll(async () => {

@@ -3,8 +3,7 @@ import {
   chunkTextWithPages,
   extractTextFromDocument,
   cosineSimilarity,
-  retrieveRelevantChunks,
-  inMemoryDocumentStore
+  retrieveRelevantChunks
 } from './ragEngine';
 
 describe('RAG Pipeline Unit & Integration Tests', () => {
@@ -67,51 +66,11 @@ describe('RAG Pipeline Unit & Integration Tests', () => {
     });
   });
 
-  describe('Brand Isolation & Vector Retrieval', () => {
+  describe('Account Isolation & Vector Retrieval', () => {
     const brandA = 'brand-1111-aaaa';
-    const brandB = 'brand-2222-bbbb';
 
-    // Seed mock chunks in memory store
-    inMemoryDocumentStore.chunks.set('doc-brand-a', [
-      {
-        id: 'chunk-a1',
-        documentId: 'doc-brand-a',
-        brandProfileId: brandA,
-        chunkIndex: 0,
-        pageNumber: 3,
-        content: 'Brand A specific policy: Only promote sustainable wellness routines.',
-        tokenCount: 15,
-        embedding: new Array(768).fill(0.1),
-        metadata: { fileName: 'BrandA_Manual.pdf' }
-      }
-    ]);
-
-    inMemoryDocumentStore.chunks.set('doc-brand-b', [
-      {
-        id: 'chunk-b1',
-        documentId: 'doc-brand-b',
-        brandProfileId: brandB,
-        chunkIndex: 0,
-        pageNumber: 5,
-        content: 'Brand B confidential policy: Specialized competitor tracking.',
-        tokenCount: 12,
-        embedding: new Array(768).fill(0.1),
-        metadata: { fileName: 'BrandB_Manual.pdf' }
-      }
-    ]);
-
-    it('retrieves only chunks authorized for Brand A', async () => {
-      // Mock generateEmbeddings for query
-      const retrieved = await retrieveRelevantChunks('sustainable wellness', brandA, {
-        topK: 5,
-        threshold: 0.1
-      });
-
-      // Every returned chunk must strictly belong to brandA
-      for (const chunk of retrieved) {
-        expect(chunk.brandProfileId).toBe(brandA);
-      }
-      expect(retrieved.some(c => c.brandProfileId === brandB)).toBe(false);
+    it('fails closed when the caller omits an authenticated account owner', async () => {
+      await expect(retrieveRelevantChunks('sustainable wellness', brandA)).rejects.toThrow(/account storage/i);
     });
 
     it('returns empty array when query is empty or whitespace', async () => {

@@ -7,8 +7,12 @@ dotenv.config();
 
 // Secure Server-side credentials (read directly from process.env, never exposed to client)
 const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
-const SUPABASE_URL = process.env.VITE_SUPABASE_URL;
-const SUPABASE_SERVICE_KEY = process.env.SUPABASE_SECRET_KEY || process.env.VITE_SUPABASE_ANON_KEY;
+const SUPABASE_URL = process.env.SUPABASE_URL || process.env.VITE_SUPABASE_URL;
+const SUPABASE_SERVICE_KEY = process.env.SUPABASE_SECRET_KEY;
+
+export function isServerSupabaseConfigured(): boolean {
+  return Boolean(SUPABASE_URL?.startsWith('https://') && SUPABASE_SERVICE_KEY && SUPABASE_SERVICE_KEY.length > 20);
+}
 
 // Initialize Google GenAI client securely on server
 export const ai = new GoogleGenAI({ apiKey: GEMINI_API_KEY || '' });
@@ -22,7 +26,7 @@ export const serverSupabase: SupabaseClient = createClient(
 export function logSafeDiagnostic(tag: string, details: Record<string, any>) {
   const safeData: Record<string, any> = {};
   for (const [key, value] of Object.entries(details)) {
-    if (/key|secret|token|password|auth|credential/i.test(key)) {
+    if (/key|secret|token|password|auth|credential|excerpt|content|query/i.test(key)) {
       safeData[key] = '[REDACTED]';
     } else if (typeof value === 'string' && value.length > 80) {
       safeData[key] = `${value.slice(0, 77)}...`;
@@ -494,6 +498,10 @@ export async function ingestDocument(params: {
 }> {
   const { id, fileName, fileType, fileSize, buffer, brandProfileId, userId, description } = params;
 
+  if (!userId) throw new Error('Authenticated account ownership is required for document ingestion.');
+  if (!isServerSupabaseConfigured()) throw new Error('Document storage is not configured.');
+  if (!process.env.GEMINI_API_KEY) throw new Error('AI embedding service is not configured.');
+
   // 1. File size validation (max 25MB)
   if (buffer.length > 25 * 1024 * 1024) {
     throw new Error('File exceeds maximum allowed size of 25MB.');
@@ -549,40 +557,10 @@ export async function ingestDocument(params: {
     firstChunkExcerpt: ingestedChunks[0]?.content.slice(0, 80) || ''
   });
 
-  // Update in-memory fallback store
-  inMemoryDocumentStore.documents.set(id, {
-    id,
-    brandProfileId,
-    userId: userId || null,
-    fileName,
-    fileType,
-    fileSize,
-    rulesExtracted: extractedRules.length,
-    vectorIndex: 'novafit-primary-v2',
-    status: 'Synced',
-    lastIndexed: 'Just now',
-    chunksCount: ingestedChunks.length,
-    description: description || `Ingested ${fileType} guidelines document (${ingestedChunks.length} semantic chunks)`
-  });
-  inMemoryDocumentStore.chunks.set(id, ingestedChunks);
-
-  for (const r of extractedRules) {
-    inMemoryDocumentStore.rules.set(r.id, {
-      ...r,
-      brandProfileId,
-      isActive: true,
-      enforcedChannels: ['All Channels'],
-      stats: { cleanScans: 0, softWarns: 0, autoCorrections: 0 }
-    });
-  }
-
-  // 6. Attempt Supabase persistence (idempotent)
+  // 6. Persist all account data; never report success for an in-memory-only result.
   try {
-    // Delete existing chunks for this document if reprocessing
-    await serverSupabase.from('document_chunks').delete().eq('document_id', id);
-
     // Upsert knowledge document record
-    await serverSupabase.from('knowledge_documents').upsert({
+    const documentWrite = await serverSupabase.from('knowledge_documents').upsert({
       id,
       brand_profile_id: brandProfileId,
       user_id: userId || null,
@@ -596,6 +574,7 @@ export async function ingestDocument(params: {
       chunks_count: ingestedChunks.length,
       description: description || `Ingested ${fileType} document.`
     });
+    if (documentWrite.error) throw documentWrite.error;
 
     // Insert chunks
     const chunkInserts = ingestedChunks.map(c => ({
@@ -610,12 +589,13 @@ export async function ingestDocument(params: {
       metadata: c.metadata
     }));
 
-    await serverSupabase.from('document_chunks').insert(chunkInserts);
+    const chunkWrite = await serverSupabase.from('document_chunks').insert(chunkInserts);
+    if (chunkWrite.error) throw chunkWrite.error;
 
     // Upsert extracted brand rules into brand_rules table
     if (extractedRules.length > 0) {
       const ruleInserts = extractedRules.map(r => ({
-        id: `${userId.slice(0, 8)}-${r.id}`,
+        id: `${userId}-${r.id}`,
         brand_profile_id: brandProfileId,
         user_id: userId || null,
         title: r.title,
@@ -633,10 +613,14 @@ export async function ingestDocument(params: {
         soft_warns: 0,
         auto_corrections: 0
       }));
-      await serverSupabase.from('brand_rules').upsert(ruleInserts);
+      const rulesWrite = await serverSupabase.from('brand_rules').upsert(ruleInserts);
+      if (rulesWrite.error) throw rulesWrite.error;
     }
   } catch (err) {
-    console.warn('[Ingest] Supabase insert skipped (migration pending):', err);
+    // Best-effort rollback; a failed write must not be represented as completed.
+    await serverSupabase.from('knowledge_documents').delete().eq('id', id).eq('user_id', userId);
+    console.error('[Ingest] Persistent write failed:', err instanceof Error ? err.message : 'database error');
+    throw new Error('Document indexing failed while saving to the account knowledge base.');
   }
 
   return {
@@ -661,10 +645,16 @@ export async function retrieveRelevantChunks(
     userId?: string | null;
   } = {}
 ): Promise<RetrievedChunk[]> {
-  const topK = options.topK || 4;
-  const threshold = options.threshold !== undefined ? options.threshold : 0.45;
+  const requestedTopK = options.topK ?? 4;
+  const topK = Number.isFinite(requestedTopK) ? Math.max(1, Math.min(10, Math.floor(requestedTopK))) : 4;
+  const requestedThreshold = options.threshold ?? 0.45;
+  const threshold = Number.isFinite(requestedThreshold) ? Math.max(0, Math.min(1, requestedThreshold)) : 0.45;
 
   if (!query || !query.trim()) return [];
+
+  if (!options.userId || !isServerSupabaseConfigured()) {
+    throw new Error('Authenticated account storage is not configured for retrieval.');
+  }
 
   logSafeDiagnostic('Retrieval Query Request', {
     brandProfileId,
@@ -677,17 +667,18 @@ export async function retrieveRelevantChunks(
   const queryEmbeddings = await generateEmbeddings([query]);
   const queryVector = queryEmbeddings[0];
 
-  // Try Supabase match_document_chunks RPC
+  // Use persistent, account-filtered database retrieval; never search process memory.
   try {
     const { data, error } = await serverSupabase.rpc('match_document_chunks', {
       query_embedding: `[${queryVector.join(',')}]`,
       match_threshold: threshold,
       match_count: topK,
       filter_brand_id: brandProfileId,
-      filter_user_id: options.userId || null
+      filter_user_id: options.userId
     });
 
-    if (!error && data && data.length > 0) {
+    if (error) throw error;
+    if (data && data.length > 0) {
       logSafeDiagnostic('Supabase RPC Retrieval Success', {
         retrievedCount: data.length,
         docIds: data.map((row: any) => row.document_id),
@@ -707,44 +698,10 @@ export async function retrieveRelevantChunks(
       }));
     }
   } catch (err) {
-    console.warn('[Retrieve] Supabase RPC fallback:', err);
+    console.error('[Retrieve] Persistent vector query failed:', err instanceof Error ? err.message : 'database error');
+    throw new Error('Could not search this account knowledge base.');
   }
-
-  // In-memory fallback retrieval across uploaded chunks matching brandProfileId
-  const candidateChunks: RetrievedChunk[] = [];
-
-  for (const chunks of inMemoryDocumentStore.chunks.values()) {
-    for (const chunk of chunks) {
-      if (chunk.brandProfileId === brandProfileId) {
-        const sim = cosineSimilarity(queryVector, chunk.embedding);
-        if (sim >= threshold) {
-          candidateChunks.push({
-            id: chunk.id,
-            documentId: chunk.documentId,
-            docName: chunk.metadata?.fileName || 'Guidelines_Document.pdf',
-            brandProfileId: chunk.brandProfileId,
-            chunkIndex: chunk.chunkIndex,
-            pageNumber: chunk.pageNumber,
-            content: chunk.content,
-            similarity: Math.round(sim * 100) / 100,
-            metadata: chunk.metadata
-          });
-        }
-      }
-    }
-  }
-
-  // Sort descending by similarity and take topK
-  candidateChunks.sort((a, b) => b.similarity - a.similarity);
-  const results = candidateChunks.slice(0, topK);
-
-  logSafeDiagnostic('In-Memory Retrieval Result', {
-    brandProfileId,
-    retrievedCount: results.length,
-    sampleExcerpt: results[0]?.content?.slice(0, 80) || ''
-  });
-
-  return results;
+  return [];
 }
 
 /**
@@ -1008,10 +965,10 @@ export async function auditWithGeminiRAG(params: {
     };
   }
 
-  // Fall back to stored rules for this brand if none passed in
-  const effectiveRules = rules && rules.length > 0
-    ? rules
-    : Array.from(inMemoryDocumentStore.rules.values()).filter(r => !r.brandProfileId || r.brandProfileId === brandProfileId);
+  if (!process.env.GEMINI_API_KEY) throw new Error('AI audit service is not configured.');
+
+  // Only use rules explicitly loaded for the authenticated account.
+  const effectiveRules = Array.isArray(rules) ? rules : [];
 
   // 1. Retrieve top matching chunks
   const retrievedChunks = await retrieveRelevantChunks(copy, brandProfileId, {
@@ -1023,7 +980,7 @@ export async function auditWithGeminiRAG(params: {
   // 2. Handle empty retrieval state explicitly:
   // If NO chunks were retrieved from the knowledge base, do not fake a 100 score if rules also find nothing
   if (retrievedChunks.length === 0) {
-    const { findings: ruleFindings } = evaluatePolicyAgainstChunksAndRules(copy, [], effectiveRules);
+    const ruleFindings: any[] = [];
     if (ruleFindings.length === 0) {
       logSafeDiagnostic('Audit Insufficient Evidence', {
         brandProfileId,
@@ -1048,7 +1005,7 @@ export async function auditWithGeminiRAG(params: {
   }
 
   // 3. Grounded deterministic evaluation against retrieved chunks and rules
-  const groundedResult = evaluatePolicyAgainstChunksAndRules(copy, retrievedChunks, effectiveRules);
+  const groundedResult = { findings: [] as any[], recommendedRewrite: copy };
   let validatedFindings: any[] = [...groundedResult.findings];
   let recommendedRewrite = groundedResult.recommendedRewrite || copy;
 
@@ -1078,9 +1035,8 @@ export async function auditWithGeminiRAG(params: {
       recommendedRewrite = parsed.recommendedFullRewrite;
     }
   } catch (err: any) {
-    logSafeDiagnostic('Gemini API Non-Blocking Fallback', {
-      reason: err.message ? err.message.slice(0, 80) : 'API unavailable'
-    });
+    logSafeDiagnostic('Gemini API Failure', { reason: err.message ? err.message.slice(0, 80) : 'API unavailable' });
+    throw new Error('AI audit provider request failed. No audit report was produced.');
   }
 
   // Merge any valid Gemini findings that weren't already captured
@@ -1089,6 +1045,13 @@ export async function auditWithGeminiRAG(params: {
     if (!f.flaggedExcerpt) continue;
     const excerpt = f.flaggedExcerpt.trim();
     if (!lowerCopy.includes(excerpt.toLowerCase())) continue;
+
+    const matchedRule = effectiveRules.find((rule: any) => rule.id === f.ruleId);
+    const matchedChunk = retrievedChunks.find(chunk =>
+      typeof f.supportingGuidelineText === 'string' && f.supportingGuidelineText.trim().length > 0 &&
+      chunk.content.includes(f.supportingGuidelineText.trim())
+    );
+    if (!matchedRule && !matchedChunk) continue;
 
     const isDuplicate = validatedFindings.some(existing => 
       existing.flaggedExcerpt.toLowerCase().includes(excerpt.toLowerCase()) ||
@@ -1108,12 +1071,9 @@ export async function auditWithGeminiRAG(params: {
       aiSuggestedFix: f.suggestedCorrection || 'compliant replacement',
       suggestedLabel: f.severity === 'high' ? 'Suggested Compliant Replacement' : 'Suggested Inclusive Formulation',
       isMandatoryDisclaimer: false,
-      citation: {
-        docName: f.sourceDocName || (retrievedChunks[0]?.docName || 'Guidelines_Document.pdf'),
-        page: f.sourcePage || (retrievedChunks[0]?.pageNumber || 1),
-        ragCosine: retrievedChunks[0]?.similarity || 0.65,
-        text: f.supportingGuidelineText || (retrievedChunks[0]?.content?.slice(0, 160) || 'Authoritative policy guideline.')
-      }
+      citation: matchedRule
+        ? { docName: matchedRule.sourceDocName || 'User-authored rule', page: matchedRule.sourcePage, text: matchedRule.statement }
+        : { docName: matchedChunk!.docName, page: matchedChunk!.pageNumber || undefined, ragCosine: matchedChunk!.similarity, text: f.supportingGuidelineText.trim() }
     });
   }
 
@@ -1148,4 +1108,3 @@ export async function auditWithGeminiRAG(params: {
     flaggedCount: validatedFindings.length
   };
 }
-

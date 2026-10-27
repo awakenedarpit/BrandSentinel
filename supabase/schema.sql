@@ -268,6 +268,22 @@ SECURITY DEFINER
 SET search_path = public
 AS $$
 BEGIN
+    IF filter_user_id IS NULL OR filter_brand_id IS NULL THEN
+        RAISE EXCEPTION 'Account and brand scope are required';
+    END IF;
+
+    IF COALESCE(auth.role(), '') <> 'service_role'
+       AND auth.uid() IS DISTINCT FROM filter_user_id THEN
+        RAISE EXCEPTION 'Not authorized to search this account';
+    END IF;
+
+    IF NOT EXISTS (
+        SELECT 1 FROM public.brand_profiles bp
+        WHERE bp.id = filter_brand_id AND bp.user_id = filter_user_id
+    ) THEN
+        RAISE EXCEPTION 'Brand profile not found for this account';
+    END IF;
+
     RETURN QUERY
     SELECT
         dc.id,
@@ -281,19 +297,19 @@ BEGIN
     FROM document_chunks dc
     WHERE
         -- Filter by brand profile when provided
-        (filter_brand_id IS NULL OR dc.brand_profile_id = filter_brand_id)
-        -- Enforce user authorization / tenant isolation
-        AND (
-            filter_user_id IS NULL 
-            OR dc.user_id = filter_user_id 
-            OR dc.user_id IS NULL
-        )
+        dc.brand_profile_id = filter_brand_id
+        AND dc.user_id = filter_user_id
         -- Similarity threshold check
-        AND (1 - (dc.embedding <=> query_embedding)) >= match_threshold
+        AND (1 - (dc.embedding <=> query_embedding)) >= greatest(0, least(1, match_threshold))
     ORDER BY dc.embedding <=> query_embedding
-    LIMIT match_count;
+    LIMIT greatest(1, least(10, match_count));
 END;
 $$;
+
+REVOKE ALL ON FUNCTION match_document_chunks(vector, float, int, uuid, uuid) FROM PUBLIC;
+REVOKE ALL ON FUNCTION match_document_chunks(vector, float, int, uuid, uuid) FROM anon;
+GRANT EXECUTE ON FUNCTION match_document_chunks(vector, float, int, uuid, uuid) TO authenticated;
+GRANT EXECUTE ON FUNCTION match_document_chunks(vector, float, int, uuid, uuid) TO service_role;
 
 -- ==============================================================================
 -- 7. Storage Bucket & Policies (brand-documents)
