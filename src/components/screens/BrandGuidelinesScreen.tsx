@@ -145,7 +145,7 @@ export const BrandGuidelinesScreen: React.FC<BrandGuidelinesScreenProps> = ({
                 <span className="font-body-sm text-body-sm">
                   <span className="text-on-surface-variant">Voice Persona:</span>{' '}
                   <span className="px-2 py-0.5 rounded bg-surface-container-low text-primary font-medium font-body-sm">
-                    Encouraging, Realistic, Inclusive
+                    Loaded from your saved rules
                   </span>
                 </span>
               </div>
@@ -153,7 +153,7 @@ export const BrandGuidelinesScreen: React.FC<BrandGuidelinesScreenProps> = ({
               <div className="flex items-center gap-1.5">
                 <span className="material-symbols-outlined text-on-surface-variant text-[16px]">history</span>
                 <span className="font-label-meta text-label-meta text-on-surface-variant uppercase tracking-wider">
-                  Indexed 12 mins ago
+                  Live account data
                 </span>
               </div>
             </div>
