@@ -1,6 +1,7 @@
 import { GoogleGenAI } from '@google/genai';
 import { createRequire } from 'node:module';
 import { dirname, join } from 'node:path';
+import { existsSync } from 'node:fs';
 import { pathToFileURL } from 'node:url';
 import { createClient, SupabaseClient } from '@supabase/supabase-js';
 import dotenv from 'dotenv';
@@ -177,7 +178,15 @@ export async function extractTextFromDocument(
       runtimeGlobal.Path2D ??= CanvasPath2D;
       const { PDFParse } = await import('pdf-parse');
       const pdfParseEntry = nodeRequire.resolve('pdf-parse');
-      const workerPath = join(dirname(pdfParseEntry), 'pdf.worker.mjs');
+      const workerCandidates = [
+        join(dirname(pdfParseEntry), 'pdf.worker.mjs'),
+        join(process.cwd(), 'node_modules/pdf-parse/dist/pdf-parse/cjs/pdf.worker.mjs'),
+        join(process.cwd(), 'node_modules/pdf-parse/dist/pdf-parse/esm/pdf.worker.mjs')
+      ];
+      const workerPath = workerCandidates.find(candidate => existsSync(candidate));
+      if (!workerPath) {
+        throw new Error('PDF.js worker file was not bundled with the server function.');
+      }
       PDFParse.setWorker(pathToFileURL(workerPath).href);
       const parser = new PDFParse({ data: buffer });
       let textResult: Awaited<ReturnType<typeof parser.getText>>;
@@ -383,8 +392,8 @@ export async function extractBrandRulesWithGemini(
   fileName: string
 ): Promise<ExtractedBrandRule[]> {
   const source = pages
-    .map(page => `[PAGE ${page.pageNumber}]\\n${page.text}`)
-    .join('\\n\\n')
+    .map(page => `[PAGE ${page.pageNumber}]\n${page.text}`)
+    .join('\n\n')
     .slice(0, 45000);
 
   if (!source.trim()) return [];
@@ -410,7 +419,7 @@ ${source}`;
       contents: [{ role: 'user', parts: [{ text: prompt }] }],
       config: { responseMimeType: 'application/json' }
     });
-    const raw = (response.text || '').trim().replace(/^\`\`\`(?:json)?\\s*/i, '').replace(/\`\`\`$/, '');
+    const raw = (response.text || '').trim().replace(/^\`\`\`(?:json)?\s*/i, '').replace(/\`\`\`$/, '');
     const parsed = JSON.parse(raw);
     if (!Array.isArray(parsed.rules)) return [];
 
