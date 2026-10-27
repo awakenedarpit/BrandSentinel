@@ -1,7 +1,7 @@
 import { GoogleGenAI } from '@google/genai';
 import { createClient, SupabaseClient } from '@supabase/supabase-js';
 import dotenv from 'dotenv';
-import { PDFParse } from 'pdf-parse';
+import { DOMMatrix as CanvasDOMMatrix, ImageData as CanvasImageData, Path2D as CanvasPath2D } from '@napi-rs/canvas';
 
 dotenv.config();
 
@@ -166,6 +166,11 @@ export async function extractTextFromDocument(
 
   if (isPdf) {
     try {
+      const runtimeGlobal = globalThis as any;
+      runtimeGlobal.DOMMatrix ??= CanvasDOMMatrix;
+      runtimeGlobal.ImageData ??= CanvasImageData;
+      runtimeGlobal.Path2D ??= CanvasPath2D;
+      const { PDFParse } = await import('pdf-parse');
       const parser = new PDFParse({ data: buffer });
       const textResult = await parser.getText();
       await parser.destroy();
