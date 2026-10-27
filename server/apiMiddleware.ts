@@ -1,15 +1,20 @@
 import type { Connect } from 'vite';
+import { randomUUID } from 'node:crypto';
 import {
   ingestDocument,
   retrieveRelevantChunks,
   auditWithGeminiRAG,
   inMemoryDocumentStore,
-  serverSupabase
-} from './ragEngine';
+  serverSupabase,
+  isServerSupabaseConfigured
+} from './ragEngine.js';
 
 // Parse JSON request body helper with stream guard
 async function parseJsonBody(req: Connect.IncomingMessage): Promise<any> {
   if ((req as any).body && typeof (req as any).body === 'object') {
+    if (Buffer.byteLength(JSON.stringify((req as any).body), 'utf8') > 4 * 1024 * 1024) {
+      throw Object.assign(new Error('Request body exceeds the 4MB limit.'), { statusCode: 413 });
+    }
     return (req as any).body;
   }
   if (req.readableEnded) {
@@ -17,14 +22,20 @@ async function parseJsonBody(req: Connect.IncomingMessage): Promise<any> {
   }
   return new Promise((resolve, reject) => {
     let body = '';
+    let exceededLimit = false;
     req.on('data', chunk => {
+      if (exceededLimit) return;
       body += chunk.toString();
+      if (Buffer.byteLength(body, 'utf8') > 4 * 1024 * 1024) {
+        exceededLimit = true;
+        reject(Object.assign(new Error('Request body exceeds the 4MB limit.'), { statusCode: 413 }));
+      }
     });
     req.on('end', () => {
       try {
         resolve(body && body.trim() ? JSON.parse(body) : {});
       } catch (_e) {
-        reject(new Error('Invalid JSON payload'));
+        reject(Object.assign(new Error('Invalid JSON payload.'), { statusCode: 400 }));
       }
     });
     req.on('error', err => reject(err));
@@ -43,7 +54,7 @@ async function authenticatedUserId(req: Connect.IncomingMessage): Promise<string
 // Send JSON response helper
 function sendJson(res: any, status: number, data: any) {
   res.statusCode = status;
-  res.setHeader('Content-Type', 'application/json');
+  res.setHeader('Content-Type', 'application/json; charset=utf-8');
   res.end(JSON.stringify(data));
 }
 
@@ -102,6 +113,7 @@ export function createRAGApiMiddleware(): Connect.NextHandleFunction {
         return sendJson(res, 200, {
           status: 'ok',
           geminiConfigured: hasGeminiKey,
+          supabaseConfigured: isServerSupabaseConfigured(),
           embeddingModel: 'gemini-embedding-001',
           auditModel: 'gemini-3.8-flash'
         });
@@ -158,7 +170,6 @@ export function createRAGApiMiddleware(): Connect.NextHandleFunction {
         if (!userId) return sendJson(res, 401, { error: 'Authentication required.' });
         const payload = await parseJsonBody(req);
         const {
-          id,
           fileName,
           fileType,
           fileSize,
@@ -167,8 +178,8 @@ export function createRAGApiMiddleware(): Connect.NextHandleFunction {
           description
         } = payload;
 
-        if (!fileName) {
-          return sendJson(res, 400, { error: 'Missing required field: fileName' });
+        if (typeof fileName !== 'string' || !fileName.trim() || fileName.length > 255) {
+          return sendJson(res, 400, { error: 'A valid fileName (1–255 characters) is required.' });
         }
 
         let buffer: Buffer;
@@ -180,7 +191,23 @@ export function createRAGApiMiddleware(): Connect.NextHandleFunction {
           return sendJson(res, 400, { error: 'Missing file content (base64Content or textContent)' });
         }
 
-        const docId = id || `doc-${Date.now()}`;
+        if (buffer.length === 0) return sendJson(res, 400, { error: 'The uploaded file is empty.' });
+        if (buffer.length > 3 * 1024 * 1024) return sendJson(res, 413, { error: 'Files must be 3MB or smaller for serverless upload.' });
+        const extension = fileName.toLowerCase().split('.').pop();
+        if (!['pdf', 'txt', 'md'].includes(extension || '')) {
+          return sendJson(res, 415, { error: 'Unsupported file type. Upload a PDF, TXT, or MD file.' });
+        }
+        if (extension === 'pdf' && (buffer.length < 5 || buffer.subarray(0, 5).toString('ascii') !== '%PDF-')) {
+          return sendJson(res, 400, { error: 'The uploaded file is not a valid PDF.' });
+        }
+        if (!isServerSupabaseConfigured()) {
+          return sendJson(res, 503, { error: 'Document storage is not configured. Contact the workspace administrator.' });
+        }
+        if (!process.env.GEMINI_API_KEY) {
+          return sendJson(res, 503, { error: 'AI embedding is not configured. Contact the workspace administrator.' });
+        }
+
+        const docId = `doc-${randomUUID()}`;
         const normalizedType = fileType?.toUpperCase() || (fileName.endsWith('.pdf') ? 'PDF' : 'MD');
 
         let profileQuery = await serverSupabase.from('brand_profiles').select('id').eq('user_id', userId).limit(1).maybeSingle();
@@ -202,7 +229,7 @@ export function createRAGApiMiddleware(): Connect.NextHandleFunction {
           description
         });
 
-        return sendJson(res, 200, result);
+        return sendJson(res, 201, result);
       }
 
       // 4. POST /api/retrieve (and alias /api/search)
@@ -264,6 +291,8 @@ export function createRAGApiMiddleware(): Connect.NextHandleFunction {
 
         const userId = await authenticatedUserId(req);
         if (!userId) return sendJson(res, 401, { error: 'Authentication required.' });
+        if (!isServerSupabaseConfigured()) return sendJson(res, 503, { error: 'Account data storage is not configured.' });
+        if (!process.env.GEMINI_API_KEY) return sendJson(res, 503, { error: 'AI audit provider is not configured.' });
         const payload = await parseJsonBody(req);
         const { copy, campaignContext } = payload;
 
@@ -318,11 +347,10 @@ export function createRAGApiMiddleware(): Connect.NextHandleFunction {
         ]
       });
     } catch (err: any) {
-      console.error('[API Middleware Error]:', err);
-      return sendJson(res, 500, {
-        error: err.message || 'Internal server error',
-        details: err.stack ? err.stack.split('\n').slice(0, 3) : undefined
-      });
+      console.error('[API Middleware Error]:', err instanceof Error ? err.message : 'Unexpected API error');
+      const status = err?.statusCode === 400 || err?.statusCode === 413 ? err.statusCode : 500;
+      const message = status === 400 || status === 413 ? err.message : 'The request could not be completed. Please retry or contact support.';
+      return sendJson(res, status, { error: message });
     }
   };
 }

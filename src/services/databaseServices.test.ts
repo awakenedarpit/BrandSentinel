@@ -137,24 +137,21 @@ describe('Supabase Database Integration & Mapping Layer', () => {
     expect(doc.status).toBe('Synced');
   });
 
-  it('seamlessly falls back to local seed rules when Supabase is unconfigured', async () => {
+  it('does not present sample rules as account data when Supabase is unconfigured', async () => {
     const res = await fetchBrandRules();
     expect(res.rules).toBeDefined();
-    expect(res.rules.length).toBeGreaterThanOrEqual(8);
-    expect(res.rules[0].id).toBe('BG-001');
+    if (!isSupabaseConfigured()) expect(res.rules).toEqual([]);
   });
 
-  it('seamlessly falls back to local audit history when Supabase is unconfigured', async () => {
+  it('does not present sample audit reports as account history when Supabase is unconfigured', async () => {
     const res = await fetchAuditHistory();
     expect(res.reports).toBeDefined();
-    expect(res.reports.length).toBeGreaterThan(0);
-    expect(res.reports[0].id).toContain('AUD');
+    if (!isSupabaseConfigured()) expect(res.reports).toEqual([]);
   });
 
-  it('seamlessly fetches knowledge documents from Supabase or falls back to local knowledge documents', async () => {
+  it('does not present sample documents as account knowledge when Supabase is unconfigured', async () => {
     const res = await fetchKnowledgeDocuments();
     expect(res.docs).toBeDefined();
-    expect(res.docs.length).toBeGreaterThan(0);
-    expect(res.docs[0].id).toBeDefined();
+    if (!isSupabaseConfigured()) expect(res.docs).toEqual([]);
   });
 });

@@ -8,7 +8,7 @@ describe('Gemini Model & Embedding Verification', () => {
   const key = process.env.GEMINI_API_KEY;
   const ai = new GoogleGenAI({ apiKey: key });
 
-  it('generates content with gemini-3.8-flash', async () => {
+  it.skipIf(!key)('generates content with the configured Gemini model', async () => {
     try {
       const response = await ai.models.generateContent({
         model: 'gemini-3.8-flash',
@@ -27,7 +27,7 @@ describe('Gemini Model & Embedding Verification', () => {
     }
   }, 90000);
 
-  it('generates embeddings with gemini-embedding-001', async () => {
+  it.skipIf(!key)('generates embeddings with gemini-embedding-001', async () => {
     const response = await ai.models.embedContent({
       model: 'gemini-embedding-001',
       contents: 'BrandSentinel AI brand compliance test'
