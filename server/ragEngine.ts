@@ -372,6 +372,87 @@ export function extractRulesFromDocumentText(
   return extracted;
 }
 
+
+/**
+ * Uses Gemini to extract actionable rules from ordinary brand books, not only
+ * documents that happen to contain IDs like COL-001. Page markers are supplied
+ * so citations remain traceable to the uploaded source.
+ */
+export async function extractBrandRulesWithGemini(
+  pages: Array<{ pageNumber: number; text: string }>,
+  fileName: string
+): Promise<ExtractedBrandRule[]> {
+  const source = pages
+    .map(page => `[PAGE ${page.pageNumber}]\\n${page.text}`)
+    .join('\\n\\n')
+    .slice(0, 45000);
+
+  if (!source.trim()) return [];
+
+  const prompt = `You extract enforceable brand-governance rules from uploaded brand books, style guides, compliance manuals, and marketing guidelines.
+Return JSON only in this exact shape:
+{"rules":[{"title":"short rule name","category":"Brand Voice|Marketing Claims|Approved & Prohibited Phrases|Required Disclaimers|Terminology","severity":"high|medium|low","statement":"faithful concise rule supported by the source","sourcePage":1,"prohibitedPatterns":["only exact or clearly disallowed wording supported by the source"],"approvedSubstitutions":["approved alternative explicitly supported by the source"],"mandatoryCopy":"exact required wording, or empty string"}]}
+Instructions:
+- Extract practical, testable rules about voice/tone, factual and performance claims, required disclaimers, approved/prohibited phrases, terminology, capitalization, audience, and other explicit brand constraints.
+- Do not invent policies, examples, numeric thresholds, legal requirements, or approved replacements.
+- Keep source wording and meaning faithful. Do not turn suggestions into absolute prohibitions.
+- Use a page number from the [PAGE N] markers when possible.
+- If a rule has no prohibited phrase or approved replacement in the source, return an empty array for that field.
+- Ignore generic descriptive copy that does not impose a guideline.
+- Return an empty rules array if no actionable rules exist.
+File: ${fileName}
+SOURCE:
+${source}`;
+
+  try {
+    const response = await ai.models.generateContent({
+      model: 'gemini-2.5-flash',
+      contents: [{ role: 'user', parts: [{ text: prompt }] }],
+      config: { responseMimeType: 'application/json' }
+    });
+    const raw = (response.text || '').trim().replace(/^\`\`\`(?:json)?\\s*/i, '').replace(/\`\`\`$/, '');
+    const parsed = JSON.parse(raw);
+    if (!Array.isArray(parsed.rules)) return [];
+
+    const validCategories: ExtractedBrandRule['category'][] = [
+      'Brand Voice', 'Marketing Claims', 'Approved & Prohibited Phrases',
+      'Required Disclaimers', 'Terminology'
+    ];
+    const validSeverities: ExtractedBrandRule['severity'][] = ['high', 'medium', 'low'];
+    return parsed.rules.slice(0, 100).flatMap((rule: any, index: number) => {
+      if (typeof rule?.title !== 'string' || typeof rule?.statement !== 'string') return [];
+      const title = rule.title.trim().slice(0, 180);
+      const statement = rule.statement.trim().slice(0, 3000);
+      if (!title || statement.length < 8) return [];
+      const page = Number(rule.sourcePage);
+      const category = validCategories.includes(rule.category) ? rule.category : 'Approved & Prohibited Phrases';
+      const severity = validSeverities.includes(rule.severity) ? rule.severity : 'medium';
+      const strings = (value: unknown) => Array.isArray(value)
+        ? value.filter((item): item is string => typeof item === 'string' && item.trim().length > 0)
+            .map(item => item.trim().slice(0, 240)).slice(0, 20)
+        : [];
+      return [{
+        id: `AI-${String(index + 1).padStart(3, '0')}`,
+        title,
+        category,
+        severity,
+        statement,
+        sourceDocName: fileName,
+        sourcePage: Number.isInteger(page) && page > 0 ? page : undefined,
+        prohibitedPatterns: strings(rule.prohibitedPatterns),
+        approvedSubstitutions: strings(rule.approvedSubstitutions),
+        mandatoryCopy: typeof rule.mandatoryCopy === 'string' ? rule.mandatoryCopy.trim().slice(0, 1000) : undefined
+      }];
+    });
+  } catch (error) {
+    logSafeDiagnostic('AI Rule Extraction Fallback', {
+      fileName,
+      reason: error instanceof Error ? error.message : 'Unknown extraction error'
+    });
+    return [];
+  }
+}
+
 /**
  * Generates 768-dimensional embeddings using Gemini embedding model
  */
@@ -527,8 +608,11 @@ export async function ingestDocument(params: {
   // 2. Parse document text
   const pages = await extractTextFromDocument(buffer, fileName, fileType);
 
-  // 3. Extract rules from document text
-  const extractedRules = extractRulesFromDocumentText(pages, fileName);
+  // 3. Extract explicit rules from formatted documents and general prose with Gemini.
+  // Keep deterministic extraction as a fallback if the model is unavailable.
+  const deterministicRules = extractRulesFromDocumentText(pages, fileName);
+  const aiRules = await extractBrandRulesWithGemini(pages, fileName);
+  const extractedRules = aiRules.length > 0 ? aiRules : deterministicRules;
 
   // 4. Chunk text
   const rawChunks = chunkTextWithPages(pages, { chunkSize: 700, chunkOverlap: 120 });
