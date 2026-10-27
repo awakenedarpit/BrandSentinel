@@ -188,80 +188,31 @@ export const BrandGuidelinesScreen: React.FC<BrandGuidelinesScreenProps> = ({
         </div>
       </div>
 
-      {/* Automated RAG Rapid Ingestion Drawer Banner */}
-      <div className="relative overflow-hidden rounded-2xl bg-surface-container-lowest p-space-lg mb-space-lg shadow-sm border border-outline-variant/30">
-        <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-space-md">
-          <div className="flex items-center gap-space-md min-w-0">
-            <div className="w-12 h-12 rounded-xl bg-primary-fixed flex items-center justify-center flex-shrink-0 text-primary shadow-sm">
-              <span className="material-symbols-outlined text-[26px]">smart_toy</span>
-            </div>
-            <div className="flex flex-col min-w-0">
-              <div className="flex items-center gap-2 flex-wrap">
-                <h3 className="font-headline-sm text-headline-sm text-on-surface">
-                  Automated RAG Guideline Extraction
-                </h3>
-                <span className="px-2 py-0.5 rounded-full bg-secondary-fixed text-on-secondary-fixed-variant font-label-code text-label-code font-semibold">
-                  Gemini 1.5 Pro Extractor
-                </span>
-                <span className="px-2 py-0.5 rounded-full bg-surface-container-high text-on-surface-variant font-label-meta text-[10px] uppercase tracking-wide">
-                  OCR Enabled
-                </span>
-              </div>
-              <p className="font-body-sm text-body-sm text-on-surface-variant truncate mt-0.5">
-                Drop fresh Brand PDF books or style sheets to semantically tokenize prohibited claims, mandatory legal copy, and brand voice guidelines.
-              </p>
-            </div>
+      {/* Live extraction status: values come from persisted account rules, never demo placeholders */}
+      <div className="relative rounded-2xl bg-surface-container-lowest p-space-lg mb-space-lg shadow-sm border border-outline-variant/30">
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-3">
+          <div>
+            <h3 className="font-headline-sm text-headline-sm text-on-surface">Guideline extraction results</h3>
+            <p className="font-body-sm text-body-sm text-on-surface-variant mt-1">
+              These counts reflect the rules currently loaded from your account. Inspect the rule list below to verify each extracted statement and its source.
+            </p>
           </div>
-
-          <div className="flex items-center gap-space-sm flex-shrink-0 w-full lg:w-auto justify-between lg:justify-end">
-            <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-surface-container-low text-on-surface">
-              <span className="material-symbols-outlined text-[#10b981] text-[18px]">verified</span>
-              <span className="font-body-sm text-body-sm text-on-surface font-medium truncate max-w-xs">
-                Extracted <span className="text-primary font-semibold">8 rules</span> from <span className="font-label-code text-label-code font-semibold">your brand_Compliance_Manual_2025.pdf</span>
-              </span>
+          <div className="flex gap-3">
+            <div className="rounded-xl bg-surface-container-low px-4 py-3">
+              <div className="text-2xl font-semibold text-on-surface">{rules.length}</div>
+              <div className="text-xs text-on-surface-variant">Saved rules</div>
             </div>
-            <button
-              onClick={onOpenImportModal}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-surface-container hover:bg-surface-container-high text-on-surface font-body-sm text-body-sm font-semibold transition-colors"
-            >
-              <span className="material-symbols-outlined text-[16px]">visibility</span>
-              <span>Inspect Log</span>
-            </button>
+            <div className="rounded-xl bg-surface-container-low px-4 py-3">
+              <div className="text-2xl font-semibold text-on-surface">{rules.filter(r => r.isActive).length}</div>
+              <div className="text-xs text-on-surface-variant">Active rules</div>
+            </div>
           </div>
         </div>
-
-        {/* Quick Dropzone Strip */}
-        <div className="mt-space-md p-space-md rounded-xl bg-surface-container-low/70 flex flex-col md:flex-row items-center justify-between gap-space-md border border-outline-variant/10">
-          <div className="flex items-center gap-space-md">
-            <div className="w-10 h-10 rounded-lg bg-surface-container-lowest flex items-center justify-center text-primary shadow-sm">
-              <span className="material-symbols-outlined text-[20px]">cloud_upload</span>
-            </div>
-            <div>
-              <p className="font-body-sm text-body-sm font-semibold text-on-surface">
-                Drag & drop brand deck, legal mandate PDF, or markdown repo
-              </p>
-              <p className="font-label-meta text-label-meta text-on-surface-variant uppercase tracking-wider">
-                Supports PDF, DOCX, MD up to 45MB • Auto-chunks into Vector Embeddings
-              </p>
-            </div>
+        {rules.length === 0 && (
+          <div className="mt-4 rounded-xl border border-dashed border-outline-variant p-4 text-sm text-on-surface-variant">
+            No extracted or manually configured rules are available in this workspace yet. Upload a guideline document; after ingestion, its saved rules should appear here and in the rule list below.
           </div>
-          <div className="flex items-center gap-2">
-            <button
-              onClick={onOpenImportModal}
-              className="px-space-md py-1.5 rounded-lg bg-surface-container-lowest hover:bg-surface-container-high text-on-surface text-body-sm font-semibold transition-colors shadow-sm"
-            >
-              Browse Files
-            </button>
-            <span className="font-label-code text-[11px] text-on-surface-variant">or</span>
-            <button
-              onClick={() => alert('Notion Workspace Integration: Connected to your brand Marketing Hub.')}
-              className="px-space-md py-1.5 rounded-lg bg-surface-container-lowest hover:bg-surface-container-high text-primary text-body-sm font-semibold transition-colors shadow-sm flex items-center gap-1"
-            >
-              <span className="material-symbols-outlined text-[16px]">link</span>
-              Connect Notion
-            </button>
-          </div>
-        </div>
+        )}
       </div>
 
       {/* Category Filter Tabs */}
@@ -295,15 +246,15 @@ export const BrandGuidelinesScreen: React.FC<BrandGuidelinesScreenProps> = ({
         <div className="hidden xl:flex items-center gap-space-md px-3 py-1.5 rounded-xl bg-surface-container-lowest shadow-sm border border-outline-variant/30">
           <div className="flex items-center gap-2">
             <span className="w-2.5 h-2.5 rounded-full bg-error"></span>
-            <span className="font-label-meta text-label-meta text-on-surface-variant">5 Critical</span>
+            <span className="font-label-meta text-label-meta text-on-surface-variant">{rules.filter(r => r.severity === "high").length} High</span>
           </div>
           <div className="flex items-center gap-2">
             <span className="w-2.5 h-2.5 rounded-full bg-[#f59e0b]"></span>
-            <span className="font-label-meta text-label-meta text-on-surface-variant">12 Medium</span>
+            <span className="font-label-meta text-label-meta text-on-surface-variant">{rules.filter(r => r.severity === "medium").length} Medium</span>
           </div>
           <div className="flex items-center gap-2">
             <span className="w-2.5 h-2.5 rounded-full bg-[#10b981]"></span>
-            <span className="font-label-meta text-label-meta text-on-surface-variant">7 Guideline</span>
+            <span className="font-label-meta text-label-meta text-on-surface-variant">{rules.filter(r => r.severity === "low").length} Low</span>
           </div>
         </div>
       </div>
