@@ -39,7 +39,7 @@ export const ImportModal: React.FC<ImportModalProps> = ({
         setProgressText('Indexed into pgvector knowledge base!');
         setTimeout(() => {
           setIsProcessing(false);
-          onExtractionComplete(file.name, Math.max(1, Math.round((result.chunkCount || 2) / 2)));
+          onExtractionComplete(file.name, result.rulesExtracted ?? 0);
           onClose();
         }, 500);
       } else {
