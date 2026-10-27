@@ -7,6 +7,14 @@ function sendJson(res: ServerResponse, status: number, payload: Record<string, u
   res.end(headOnly ? undefined : JSON.stringify(payload));
 }
 
+function safeErrorSummary(error: unknown): string {
+  if (!(error instanceof Error)) return 'Unknown error';
+  return error.message
+    .replace(/Bearer\s+\S+/gi, 'Bearer [REDACTED]')
+    .replace(/(?:AIza[\w-]{20,}|eyJ[\w.-]{20,}|sb_secret_[\w-]+)/g, '[REDACTED]')
+    .slice(0, 180);
+}
+
 /**
  * Vercel serverless catch-all for BrandSentinel API routes.
  * Health is deliberately independent from the AI/PDF dependency graph. Other
@@ -39,7 +47,7 @@ export default async function handler(req: IncomingMessage, res: ServerResponse)
       return sendJson(res, 404, { error: 'API route not found.' });
     });
   } catch (error) {
-    console.error('[API Initialization Error]', error instanceof Error ? error.name : 'UnknownError');
+    console.error('[API Initialization Error]', error instanceof Error ? error.name : 'UnknownError', safeErrorSummary(error));
     if (!res.writableEnded) {
       sendJson(res, 500, { error: 'The API service could not initialize. Check server function configuration and logs.' });
     }
